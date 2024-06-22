@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/06/22 16:45:08 by upolat           ###   ########.fr       */
+/*   Updated: 2024/06/22 18:27:12 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,16 @@ void	initialize_table(t_table *t, int argc, char **argv)
 	t->fork_state[1] = 1;
 }
 
+void	ft_usleep(int time)
+{
+	int	iteration;
+
+	iteration  = time * 2;
+	printf("Iteration is %d\n", iteration);
+	while(iteration--)
+		usleep(500);
+}
+
 void	*eat_sleep_think(void *arg)
 {
 	t_table	*t;
@@ -91,14 +101,14 @@ void	*eat_sleep_think(void *arg)
 		t->fork_state[1] = 0;
 		printf("%ld ms: Someone has taken a fork.\n", get_relative_time(t->start_time));
 		printf("%ld ms: Someone is eating.\n", get_relative_time(t->start_time));
-		usleep(200000);
+		usleep(t->time_to_sleep * 1000);
 		printf("%ld ms: Someone is thinking.\n", get_relative_time(t->start_time));
 		t->fork_state[0] = 1;
 		t->fork_state[1] = 1;
 		pthread_mutex_unlock(&t->fork_state_mutex);
 	}
 	printf("%ld ms: Someone is sleeping.\n", get_relative_time(t->start_time));
-	usleep(200000);
+	usleep(t->time_to_sleep * 1000);
 	return (NULL);
 }
 
