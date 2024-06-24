@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/06/22 18:27:12 by upolat           ###   ########.fr       */
+/*   Updated: 2024/06/24 15:06:37 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,17 +65,24 @@ long	get_relative_time(struct timeval start_time)
 	return ((seconds * 1000) + (useconds / 1000));
 }
 
-void	initialize_table(t_table *t, int argc, char **argv)
+void	initialize_table(t_philo *p, t_overseer *o, int argc, char **argv)
 {
-	t->number_of_philos = ft_atoi(argv[1]);
-	t->number_of_forks = ft_atoi(argv[1]);
-	t->time_to_die = ft_atoi(argv[2]);
-	t->time_to_eat = ft_atoi(argv[3]);
-	t->time_to_sleep = ft_atoi(argv[4]);
-	if (argc == 6)
-		t->must_eat_amount = ft_atoi(argv[5]);
-	t->fork_state[0] = 1;
-	t->fork_state[1] = 1;
+	int	i;
+	
+	i = 0;
+	while (i < o->number_of_philos)
+	{
+		p->number_of_philos = ft_atoi(argv[1]);
+		p->number_of_forks = ft_atoi(argv[1]);
+		p->time_to_die = ft_atoi(argv[2]);
+		p->time_to_eat = ft_atoi(argv[3]);
+		p->time_to_sleep = ft_atoi(argv[4]);
+		if (argc == 6)
+			p->must_eat_amount = ft_atoi(argv[5]);
+		else
+			p->must_eat_amount = INT_MAX;
+		i++
+	}
 }
 
 void	ft_usleep(int time)
@@ -114,19 +121,31 @@ void	*eat_sleep_think(void *arg)
 
 int	main(int argc, char **argv)
 {
-	pthread_t	thread[4];
-	t_table		t;
-	int			i;
+	t_philo		*philo;
+	t_overseer	overseer;
+	int	i;
 
 	if (argc < 5 || argc > 6)
 		return (printf("Usage is wrong.\n"), 1);
-	initialize_table(&t, argc, argv);
-	if (pthread_mutex_init(&t.fork_state_mutex, NULL) != 0)
+	
+	overseer.number_of_philos = ft_atoi(argv[1]);
+
+
+	philo = malloc(sizeof(t_table) * overseer.number_of_philos);
+	
+	initialize_table(philo, &overseer, argc, argv);
+
+
+
+/*	if (pthread_mutex_init(&t.fork_state_mutex, NULL) != 0)
 	{
 		perror("pthread_mutex_init error");
 		return (1);
-	}
-	gettimeofday(&t.start_time, NULL);
+	} */
+	
+	
+	//gettimeofday(&t.start_time, NULL);
+	
 	i = 0;
 	while (i < 4)
 	{
