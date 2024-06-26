@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/06/24 15:06:37 by upolat           ###   ########.fr       */
+/*   Updated: 2024/06/27 02:17:16 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include "philo.h"
+
+void	*eat_sleep_think(void *arg);
 
 static int	ft_isspace(const char c)
 {
@@ -52,7 +54,19 @@ int	ft_atoi(const char *str)
 	}
 	return (sign * nbr);
 }
+/*
+long	get_relative_time(long last_eating_time)
+{
+	struct timeval	current_time;
+	long			seconds;
+	long			useconds;
 
+	gettimeofday(&current_time, NULL);
+	seconds = current_time.tv_sec - start_time.tv_sec;
+	useconds = current_time.tv_usec - start_time.tv_usec;
+	return ((seconds * 1000) + (useconds / 1000));
+}
+*/
 long	get_relative_time(struct timeval start_time)
 {
 	struct timeval	current_time;
@@ -65,6 +79,7 @@ long	get_relative_time(struct timeval start_time)
 	return ((seconds * 1000) + (useconds / 1000));
 }
 
+
 void	initialize_table(t_philo *p, t_overseer *o, int argc, char **argv)
 {
 	int	i;
@@ -72,17 +87,80 @@ void	initialize_table(t_philo *p, t_overseer *o, int argc, char **argv)
 	i = 0;
 	while (i < o->number_of_philos)
 	{
-		p->number_of_philos = ft_atoi(argv[1]);
-		p->number_of_forks = ft_atoi(argv[1]);
-		p->time_to_die = ft_atoi(argv[2]);
-		p->time_to_eat = ft_atoi(argv[3]);
-		p->time_to_sleep = ft_atoi(argv[4]);
+		p[i].number_of_philos = ft_atoi(argv[1]);
+		p[i].number_of_forks = ft_atoi(argv[1]);
+		p[i].philo_num = i + 1;
+		p[i].time_to_die = ft_atoi(argv[2]);
+		p[i].time_to_eat = ft_atoi(argv[3]);
+		p[i].time_to_sleep = ft_atoi(argv[4]);
 		if (argc == 6)
-			p->must_eat_amount = ft_atoi(argv[5]);
+			p[i].must_eat_amount = ft_atoi(argv[5]);
 		else
-			p->must_eat_amount = INT_MAX;
-		i++
+			p[i].must_eat_amount = INT_MAX;
+		gettimeofday(&p[i].last_eating_time, NULL);
+		i++;
 	}
+}
+
+void	create_mutexes(t_philo *p, t_overseer *o)
+{
+	int	i;
+
+	i = 0;
+	while (i < o->number_of_philos)
+	{
+		if (pthread_mutex_init(&p[i].fork_state_mutex, NULL) != 0)
+		{
+			perror("pthread_mutex_init error");
+			return ;
+		}
+		i++;
+	}
+}
+
+void	create_threads(t_philo *p, t_overseer *o)
+{
+	int	i;
+
+	i = 0;
+	while (i < o->number_of_philos)
+	{
+		if (pthread_create(&p[i].thread, NULL, eat_sleep_think, (void *)&p) != 0)
+		{
+			perror("pthread_create error");
+			return ;
+		}
+		i++;
+	}
+}
+
+void	join_threads(t_philo *p, t_overseer *o)
+{
+	int	i;
+
+	i = 0;
+	while (i < o->number_of_philos)
+	{
+		if (pthread_join(p[i].thread, NULL) != 0)
+		{
+			perror("pthread_join error");
+			return ;
+		}
+		i++;
+	}
+}
+
+void	destroy_mutexes(t_philo *p, t_overseer *o)
+{
+	int	i;
+
+	i = 0;
+	while (i < o->number_of_philos)
+	{
+		pthread_mutex_destroy(&p[i].fork_state_mutex);
+		i++; // Error handling???
+	}
+	return ;
 }
 
 void	ft_usleep(int time)
@@ -97,15 +175,16 @@ void	ft_usleep(int time)
 
 void	*eat_sleep_think(void *arg)
 {
-	t_table	*t;
+	t_philo	*p;
 
-	t = (t_table *)arg;
-	pthread_mutex_lock(&t->fork_state_mutex);
+	p = (t_philo *)arg;
+	(void)p;
+/*	pthread_mutex_lock(&t->fork_state_mutex);
 	if (t->fork_state[0] == 1 && t->fork_state[1] == 1)
 	{
 		t->fork_state[0] = 0;
 		printf("%ld ms: Someone has taken a fork.\n", get_relative_time(t->start_time));
-		t->fork_state[1] = 0;
+		//t->fork_state[1] = 0;
 		printf("%ld ms: Someone has taken a fork.\n", get_relative_time(t->start_time));
 		printf("%ld ms: Someone is eating.\n", get_relative_time(t->start_time));
 		usleep(t->time_to_sleep * 1000);
@@ -115,7 +194,7 @@ void	*eat_sleep_think(void *arg)
 		pthread_mutex_unlock(&t->fork_state_mutex);
 	}
 	printf("%ld ms: Someone is sleeping.\n", get_relative_time(t->start_time));
-	usleep(t->time_to_sleep * 1000);
+	usleep(t->time_to_sleep * 1000); */
 	return (NULL);
 }
 
@@ -123,43 +202,23 @@ int	main(int argc, char **argv)
 {
 	t_philo		*philo;
 	t_overseer	overseer;
-	int	i;
 
 	if (argc < 5 || argc > 6)
 		return (printf("Usage is wrong.\n"), 1);
 	
 	overseer.number_of_philos = ft_atoi(argv[1]);
 
-
-	philo = malloc(sizeof(t_table) * overseer.number_of_philos);
+	philo = malloc(sizeof(t_philo) * overseer.number_of_philos);
 	
 	initialize_table(philo, &overseer, argc, argv);
 
+	create_mutexes(philo, &overseer);
 
+	create_threads(philo, &overseer);
 
-/*	if (pthread_mutex_init(&t.fork_state_mutex, NULL) != 0)
-	{
-		perror("pthread_mutex_init error");
-		return (1);
-	} */
-	
-	
-	//gettimeofday(&t.start_time, NULL);
-	
-	i = 0;
-	while (i < 4)
-	{
-		if (pthread_create(&thread[i], NULL, eat_sleep_think, (void *)&t) != 0)
-			return (perror("pthread_create error"), 1);
-		i++;
-	}
-	i = 0;
-	while (i < 4)
-	{
-		if (pthread_join(thread[i], NULL) != 0)
-			return (perror("pthread_join error"), 1);
-		i++;
-	}
-	pthread_mutex_destroy(&t.fork_state_mutex);
+	join_threads(philo, &overseer);
+
+	destroy_mutexes(philo, &overseer);
+
 	return (0);
 }
