@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/06/27 01:44:21 by upolat           ###   ########.fr       */
+/*   Updated: 2024/06/28 02:31:34 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,23 @@ typedef struct s_philo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				must_eat_amount;
-	pthread_mutex_t	fork_state_mutex;
+	int				*death;
+	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*write_mutex;
+	pthread_mutex_t	*death_mutex;
 	pthread_t		thread;
 	struct timeval	last_eating_time;
 }					t_philo;
 
 typedef struct s_overseer
 {
-	int		number_of_philos;
+	int				number_of_philos;
+	int				death;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	write_mutex;
+	pthread_mutex_t	death_mutex;
+	t_philo	*philos;
 }			t_overseer;
 
 #endif

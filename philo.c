@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/06/27 02:17:16 by upolat           ###   ########.fr       */
+/*   Updated: 2024/06/28 02:57:50 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,14 @@ long	get_relative_time(struct timeval start_time)
 	return ((seconds * 1000) + (useconds / 1000));
 }
 
+void	initialize_overseer(t_philo *p, t_overseer *o, int argc, char **argv)
+{
+	(void)p;
+	(void)o;
+	(void)argc;
+	(void)argv;
+	o->death = 0;
+}
 
 void	initialize_table(t_philo *p, t_overseer *o, int argc, char **argv)
 {
@@ -97,24 +105,42 @@ void	initialize_table(t_philo *p, t_overseer *o, int argc, char **argv)
 			p[i].must_eat_amount = ft_atoi(argv[5]);
 		else
 			p[i].must_eat_amount = INT_MAX;
+		if (i == 0)
+			p[i].right_fork = &o->forks[o->number_of_philos - 1];
+		else
+			p[i].right_fork = &o->forks[i - 1];
+		p[i].left_fork = &o->forks[i];
+		p[i].write_mutex = &o->write_mutex;
+		p[i].death_mutex = &o->death_mutex;
+		p[i].death = &o->death;
 		gettimeofday(&p[i].last_eating_time, NULL);
 		i++;
 	}
 }
 
-void	create_mutexes(t_philo *p, t_overseer *o)
+void	create_mutexes(t_overseer *o)
 {
 	int	i;
 
 	i = 0;
 	while (i < o->number_of_philos)
 	{
-		if (pthread_mutex_init(&p[i].fork_state_mutex, NULL) != 0)
+		if (pthread_mutex_init(&o->forks[i], NULL) != 0)
 		{
 			perror("pthread_mutex_init error");
 			return ;
 		}
 		i++;
+	}
+	if (pthread_mutex_init(&o->write_mutex, NULL) != 0)
+	{
+		perror("pthread_mutex_init error");
+		return ;
+	}
+	if (pthread_mutex_init(&o->death_mutex, NULL) != 0)
+	{
+		perror("pthread_mutex_init error");
+		return ;
 	}
 }
 
@@ -125,7 +151,7 @@ void	create_threads(t_philo *p, t_overseer *o)
 	i = 0;
 	while (i < o->number_of_philos)
 	{
-		if (pthread_create(&p[i].thread, NULL, eat_sleep_think, (void *)&p) != 0)
+		if (pthread_create(&p[i].thread, NULL, eat_sleep_think, (void *)&p[i]) != 0)
 		{
 			perror("pthread_create error");
 			return ;
@@ -150,17 +176,32 @@ void	join_threads(t_philo *p, t_overseer *o)
 	}
 }
 
-void	destroy_mutexes(t_philo *p, t_overseer *o)
+void	destroy_mutexes(t_overseer *o)
 {
 	int	i;
 
 	i = 0;
 	while (i < o->number_of_philos)
 	{
-		pthread_mutex_destroy(&p[i].fork_state_mutex);
-		i++; // Error handling???
+		if (pthread_mutex_destroy(&o->forks[i]) != 0)
+		{
+			perror("pthread_mutex_destroy error");
+			return ;
+		}
+		i++;
 	}
-	return ;
+	if (pthread_mutex_destroy(&o->write_mutex) != 0)
+	{
+		perror("pthread_mutex_destroy error");
+		return ;
+	}
+	if (pthread_mutex_destroy(&o->death_mutex) != 0)
+	{
+		perror("pthread_mutex_destroy error");
+		return ;
+	}
+	// Is checking if it is equal to zero how you handle errors in destroying?
+	// It was copy/pasted from init, so double check if it is.
 }
 
 void	ft_usleep(int time)
@@ -172,14 +213,14 @@ void	ft_usleep(int time)
 	while(iteration--)
 		usleep(500);
 }
-
+/*
 void	*eat_sleep_think(void *arg)
 {
 	t_philo	*p;
 
 	p = (t_philo *)arg;
 	(void)p;
-/*	pthread_mutex_lock(&t->fork_state_mutex);
+	pthread_mutex_lock(&t->fork_state_mutex);
 	if (t->fork_state[0] == 1 && t->fork_state[1] == 1)
 	{
 		t->fork_state[0] = 0;
@@ -194,7 +235,18 @@ void	*eat_sleep_think(void *arg)
 		pthread_mutex_unlock(&t->fork_state_mutex);
 	}
 	printf("%ld ms: Someone is sleeping.\n", get_relative_time(t->start_time));
-	usleep(t->time_to_sleep * 1000); */
+	usleep(t->time_to_sleep * 1000);
+	return (NULL);
+}
+*/
+void	*eat_sleep_think(void *arg)
+{
+	t_philo	*p;
+
+	p = (t_philo *)arg;
+	//pthread_mutex_lock(&p->fork_state_mutex);
+	printf("Philo #%d says hello!\n", p->philo_num);
+	//pthread_mutex_unlock(&p->fork_state_mutex);
 	return (NULL);
 }
 
@@ -209,16 +261,22 @@ int	main(int argc, char **argv)
 	overseer.number_of_philos = ft_atoi(argv[1]);
 
 	philo = malloc(sizeof(t_philo) * overseer.number_of_philos);
-	
+
+	overseer.philos = philo;
+
+	overseer.forks = malloc(sizeof(pthread_mutex_t) * overseer.number_of_philos);
+
+	initialize_overseer(philo, &overseer, argc, argv);
+
 	initialize_table(philo, &overseer, argc, argv);
 
-	create_mutexes(philo, &overseer);
+	create_mutexes(&overseer);
 
 	create_threads(philo, &overseer);
 
 	join_threads(philo, &overseer);
 
-	destroy_mutexes(philo, &overseer);
+	destroy_mutexes(&overseer);
 
 	return (0);
 }
