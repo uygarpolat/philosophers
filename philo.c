@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/06/28 03:38:04 by upolat           ###   ########.fr       */
+/*   Updated: 2024/06/29 02:09:39 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,19 +54,25 @@ int	ft_atoi(const char *str)
 	}
 	return (sign * nbr);
 }
-/*
-long	get_relative_time(long last_eating_time)
-{
-	struct timeval	current_time;
-	long			seconds;
-	long			useconds;
 
-	gettimeofday(&current_time, NULL);
-	seconds = current_time.tv_sec - start_time.tv_sec;
-	useconds = current_time.tv_usec - start_time.tv_usec;
-	return ((seconds * 1000) + (useconds / 1000));
+size_t	what_time_is_it(void)
+{
+	struct timeval	time;
+
+	gettimeofday(&time, NULL);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
-*/
+
+
+void	ft_usleep(size_t milisecs)
+{
+	size_t	start;
+
+	start = what_time_is_it();
+	while ((what_time_is_it() - start) < milisecs)
+		usleep(400);
+}
+
 long	get_relative_time(struct timeval start_time)
 {
 	struct timeval	current_time;
@@ -79,32 +85,29 @@ long	get_relative_time(struct timeval start_time)
 	return ((seconds * 1000) + (useconds / 1000));
 }
 
-void	initialize_overseer(t_philo *p, t_overseer *o, int argc, char **argv)
+void	initialize_overseer(t_overseer *o, int argc, char **argv)
 {
-	(void)p;
-	(void)o;
-	(void)argc;
-	(void)argv;
 	o->death = 0;
+	o->time_to_die = ft_atoi(argv[2]);
+	if (argc == 6)
+		o->must_eat_amount = ft_atoi(argv[5]);
+	else
+		o->must_eat_amount = INT_MAX;	
 }
 
-void	initialize_table(t_philo *p, t_overseer *o, int argc, char **argv)
+void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 {
 	int	i;
 	
 	i = 0;
 	while (i < o->number_of_philos)
 	{
-		p[i].number_of_philos = ft_atoi(argv[1]);
-		p[i].number_of_forks = ft_atoi(argv[1]);
+		//p[i].number_of_philos = ft_atoi(argv[1]);
+		//p[i].number_of_forks = ft_atoi(argv[1]);
 		p[i].philo_num = i + 1;
-		p[i].time_to_die = ft_atoi(argv[2]);
+		//p[i].time_to_die = ft_atoi(argv[2]);
 		p[i].time_to_eat = ft_atoi(argv[3]);
 		p[i].time_to_sleep = ft_atoi(argv[4]);
-		if (argc == 6)
-			p[i].must_eat_amount = ft_atoi(argv[5]);
-		else
-			p[i].must_eat_amount = INT_MAX;
 		p[i].left_fork = &o->forks[i];
 		p[i].right_fork = &o->forks[(i + 1) % o->number_of_philos];
 		p[i].write_mutex = &o->write_mutex;
@@ -201,52 +204,37 @@ void	destroy_mutexes(t_overseer *o)
 	// It was copy/pasted from init, so double check if it is.
 }
 
-void	ft_usleep(int time)
+void	ft_usleep2(int time)
 {
 	int	iteration;
 
 	iteration  = time * 2;
-	printf("Iteration is %d\n", iteration);
+	//printf("Iteration is %d\n", iteration);
 	while(iteration--)
 		usleep(500);
 }
-/*
+
 void	*eat_sleep_think(void *arg)
 {
 	t_philo	*p;
 
 	p = (t_philo *)arg;
-	(void)p;
-	pthread_mutex_lock(&t->fork_state_mutex);
-	if (t->fork_state[0] == 1 && t->fork_state[1] == 1)
+	
+	while (1)
 	{
-		t->fork_state[0] = 0;
-		printf("%ld ms: Someone has taken a fork.\n", get_relative_time(t->start_time));
-		//t->fork_state[1] = 0;
-		printf("%ld ms: Someone has taken a fork.\n", get_relative_time(t->start_time));
-		printf("%ld ms: Someone is eating.\n", get_relative_time(t->start_time));
-		usleep(t->time_to_sleep * 1000);
-		printf("%ld ms: Someone is thinking.\n", get_relative_time(t->start_time));
-		t->fork_state[0] = 1;
-		t->fork_state[1] = 1;
-		pthread_mutex_unlock(&t->fork_state_mutex);
-	}
-	printf("%ld ms: Someone is sleeping.\n", get_relative_time(t->start_time));
-	usleep(t->time_to_sleep * 1000);
-	return (NULL);
-}
-*/
-void	*eat_sleep_think(void *arg)
-{
-	t_philo	*p;
+		//if (p->philo_num % 2 == 0)
+		//	usleep(1);
 
-	p = (t_philo *)arg;
-	pthread_mutex_lock(p->left_fork);
-	pthread_mutex_lock(p->right_fork);
-	usleep(200000);
-	printf("%ld: Philo #%d says hello!\n", get_relative_time(p->last_eating_time), p->philo_num);
-	pthread_mutex_unlock(p->left_fork);
-	pthread_mutex_unlock(p->right_fork);
+		pthread_mutex_lock(p->left_fork);
+		pthread_mutex_lock(p->right_fork);
+		usleep(200000);
+		//if (p->philo_num % 2 == 0)
+			printf("%ld: Philo #%d woke up and says hello!\n", get_relative_time(p->last_eating_time), p->philo_num);
+		pthread_mutex_unlock(p->right_fork);
+		usleep(1);
+		pthread_mutex_unlock(p->left_fork);
+		usleep(1);
+	}
 	return (NULL);
 }
 
@@ -266,13 +254,15 @@ int	main(int argc, char **argv)
 
 	overseer.forks = malloc(sizeof(pthread_mutex_t) * overseer.number_of_philos);
 
-	initialize_overseer(philo, &overseer, argc, argv);
+	initialize_overseer(&overseer, argc, argv);
 
-	initialize_table(philo, &overseer, argc, argv);
+	initialize_table(philo, &overseer, argv);
 
 	create_mutexes(&overseer);
 
 	create_threads(philo, &overseer);
+
+	//ft_overseer(&overseer);
 
 	join_threads(philo, &overseer);
 
