@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/06/28 02:57:50 by upolat           ###   ########.fr       */
+/*   Updated: 2024/06/28 03:38:04 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,11 +105,8 @@ void	initialize_table(t_philo *p, t_overseer *o, int argc, char **argv)
 			p[i].must_eat_amount = ft_atoi(argv[5]);
 		else
 			p[i].must_eat_amount = INT_MAX;
-		if (i == 0)
-			p[i].right_fork = &o->forks[o->number_of_philos - 1];
-		else
-			p[i].right_fork = &o->forks[i - 1];
 		p[i].left_fork = &o->forks[i];
+		p[i].right_fork = &o->forks[(i + 1) % o->number_of_philos];
 		p[i].write_mutex = &o->write_mutex;
 		p[i].death_mutex = &o->death_mutex;
 		p[i].death = &o->death;
@@ -244,9 +241,12 @@ void	*eat_sleep_think(void *arg)
 	t_philo	*p;
 
 	p = (t_philo *)arg;
-	//pthread_mutex_lock(&p->fork_state_mutex);
-	printf("Philo #%d says hello!\n", p->philo_num);
-	//pthread_mutex_unlock(&p->fork_state_mutex);
+	pthread_mutex_lock(p->left_fork);
+	pthread_mutex_lock(p->right_fork);
+	usleep(200000);
+	printf("%ld: Philo #%d says hello!\n", get_relative_time(p->last_eating_time), p->philo_num);
+	pthread_mutex_unlock(p->left_fork);
+	pthread_mutex_unlock(p->right_fork);
 	return (NULL);
 }
 
