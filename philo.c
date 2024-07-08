@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/06/29 02:09:39 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/04 21:01:45 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 		p[i].philo_num = i + 1;
 		//p[i].time_to_die = ft_atoi(argv[2]);
 		p[i].time_to_eat = ft_atoi(argv[3]);
-		p[i].time_to_sleep = ft_atoi(argv[4]);
+		p[i].time_to_sleep = ft_atoi(argv[4]) * 1000;
 		p[i].left_fork = &o->forks[i];
 		p[i].right_fork = &o->forks[(i + 1) % o->number_of_philos];
 		p[i].write_mutex = &o->write_mutex;
@@ -214,6 +214,33 @@ void	ft_usleep2(int time)
 		usleep(500);
 }
 
+void *eat_sleep_think2(void *arg) {
+    t_philo *p = (t_philo *)arg;
+    pthread_mutex_t *first_fork, *second_fork;
+
+    while (1) {
+        printf("Philo #%d trying to pick up first fork\n", p->philo_num);
+        first_fork = (p->philo_num % 2 == 0) ? p->right_fork : p->left_fork;
+        pthread_mutex_lock(first_fork);
+        printf("Philo #%d picked up first fork\n", p->philo_num);
+
+        printf("Philo #%d trying to pick up second fork\n", p->philo_num);
+        second_fork = (p->philo_num % 2 == 0) ? p->left_fork : p->right_fork;
+        pthread_mutex_lock(second_fork);
+        printf("Philo #%d picked up second fork\n", p->philo_num);
+
+        // Eating
+        usleep(200000);  // simulate eating
+        printf("%ld: Philo #%d woke up and says hello!\n", get_relative_time(p->last_eating_time), p->philo_num);
+        
+        pthread_mutex_unlock(second_fork);
+        pthread_mutex_unlock(first_fork);
+        printf("Philo #%d released both forks\n", p->philo_num);
+    }
+    return NULL;
+}
+
+
 void	*eat_sleep_think(void *arg)
 {
 	t_philo	*p;
@@ -222,21 +249,49 @@ void	*eat_sleep_think(void *arg)
 	
 	while (1)
 	{
-		//if (p->philo_num % 2 == 0)
-		//	usleep(1);
-
+		if (p->philo_num % 2 == 0)
+			usleep(100);
 		pthread_mutex_lock(p->left_fork);
+		printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_lock(p->right_fork);
-		usleep(200000);
-		//if (p->philo_num % 2 == 0)
-			printf("%ld: Philo #%d woke up and says hello!\n", get_relative_time(p->last_eating_time), p->philo_num);
+		printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
+		//usleep(p->time_to_sleep);
+		printf("%ld %d is eating\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_unlock(p->right_fork);
-		usleep(1);
+		usleep(p->time_to_sleep);
 		pthread_mutex_unlock(p->left_fork);
-		usleep(1);
+		usleep(1000);
 	}
 	return (NULL);
 }
+
+void *eat_sleep_think3(void *arg) {
+    t_philo *p = (t_philo *)arg;
+    pthread_mutex_t *first_fork;
+    pthread_mutex_t *second_fork;
+
+    while (1) {
+        if (p->philo_num % 2 == 0) {  // If last philosopher
+            first_fork = p->right_fork;  // Pick the lower-numbered fork first (1)
+            second_fork = p->left_fork;  // Then the higher (5)
+        } else {
+            first_fork = p->left_fork;  // Lower-numbered fork
+            second_fork = p->right_fork;  // Higher-numbered fork
+        }
+
+        pthread_mutex_lock(first_fork);
+        pthread_mutex_lock(second_fork);
+
+        // Eating
+        usleep(200000);  // simulate eating
+        printf("%ld: Philo #%d woke up and says hello!\n", get_relative_time(p->last_eating_time), p->philo_num);
+        
+        pthread_mutex_unlock(first_fork);
+        pthread_mutex_unlock(second_fork);
+    }
+    return NULL;
+}
+
 
 int	main(int argc, char **argv)
 {
