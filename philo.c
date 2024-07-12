@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/04 21:01:45 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/13 02:03:38 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 		//p[i].number_of_forks = ft_atoi(argv[1]);
 		p[i].philo_num = i + 1;
 		//p[i].time_to_die = ft_atoi(argv[2]);
-		p[i].time_to_eat = ft_atoi(argv[3]);
+		p[i].time_to_eat = ft_atoi(argv[3]) * 1000;
 		p[i].time_to_sleep = ft_atoi(argv[4]) * 1000;
 		p[i].left_fork = &o->forks[i];
 		p[i].right_fork = &o->forks[(i + 1) % o->number_of_philos];
@@ -114,6 +114,7 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 		p[i].death_mutex = &o->death_mutex;
 		p[i].death = &o->death;
 		gettimeofday(&p[i].last_eating_time, NULL);
+		gettimeofday(&p[i].last_eating_time2, NULL);
 		i++;
 	}
 }
@@ -249,18 +250,20 @@ void	*eat_sleep_think(void *arg)
 	
 	while (1)
 	{
-		if (p->philo_num % 2 == 0)
-			usleep(100);
+		//if (p->philo_num % 2 == 0)
+		//	usleep(100);
+		printf("%ld %d is thinking\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_lock(p->left_fork);
 		printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_lock(p->right_fork);
 		printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
-		//usleep(p->time_to_sleep);
 		printf("%ld %d is eating\n", get_relative_time(p->last_eating_time), p->philo_num);
+		gettimeofday(&p->last_eating_time2, NULL);
+		usleep(p->time_to_eat);
 		pthread_mutex_unlock(p->right_fork);
-		usleep(p->time_to_sleep);
 		pthread_mutex_unlock(p->left_fork);
-		usleep(1000);
+		printf("%ld %d is sleeping\n", get_relative_time(p->last_eating_time), p->philo_num);
+		usleep(p->time_to_sleep);
 	}
 	return (NULL);
 }
