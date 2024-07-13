@@ -6,22 +6,27 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/13 15:11:54 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/13 21:16:08 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <pthread.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <limits.h>
+# include <sys/time.h>
+# include <unistd.h>
+
 typedef struct s_philo
 {
 	int				number_of_philos;
-	int				number_of_forks;
+	//int				number_of_forks;
 	int				philo_num;
-	//int				time_to_die;
 	int				time_to_eat;
 	useconds_t		time_to_sleep;
-	//int				must_eat_amount;
 	int				*death;
 	int				ate;
 	pthread_mutex_t	*right_fork;
@@ -42,7 +47,7 @@ typedef struct s_overseer
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	write_mutex;
 	pthread_mutex_t	death_mutex;
-	t_philo	*philos;
+	t_philo			*philos;
 }			t_overseer;
 
 #endif
