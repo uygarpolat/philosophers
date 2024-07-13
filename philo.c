@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/13 16:36:48 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/13 20:09:34 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,28 +210,53 @@ void	*eat_sleep_think(void *arg)
 	t_philo	*p;
 
 	p = (t_philo *)arg;
-
-	while (!*p->death)
+	while (1)
 	{
+		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
 			printf("%ld %d is thinking\n", get_relative_time(p->last_eating_time), p->philo_num);
+		pthread_mutex_unlock(p->death_mutex);
 		pthread_mutex_lock(p->left_fork);
+		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
 			printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
+		pthread_mutex_unlock(p->death_mutex);
 		pthread_mutex_lock(p->right_fork);
+
+		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
 			printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
+
+		pthread_mutex_unlock(p->death_mutex);
+
+		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
 			printf("%ld %d is eating\n", get_relative_time(p->last_eating_time), p->philo_num);
+
+		pthread_mutex_unlock(p->death_mutex);
 		gettimeofday(&p->last_eating_time2, NULL);
 		ft_usleep(p->time_to_eat);
+		pthread_mutex_lock(p->write_mutex);
 		p->ate++;
-		//printf("philo #%d ate her meal #%d\n", p->philo_num, p->ate);
+		pthread_mutex_unlock(p->write_mutex);
 		pthread_mutex_unlock(p->right_fork);
 		pthread_mutex_unlock(p->left_fork);
+
+		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
 			printf("%ld %d is sleeping\n", get_relative_time(p->last_eating_time), p->philo_num);
+
+		pthread_mutex_unlock(p->death_mutex);
 		ft_usleep(p->time_to_sleep);
+
+		pthread_mutex_lock(p->death_mutex);
+		if (*p->death)
+		{
+			pthread_mutex_unlock(p->death_mutex);
+			return (NULL);
+		}
+
+		pthread_mutex_unlock(p->death_mutex);
 	}
 	return (NULL);
 }
@@ -243,8 +268,13 @@ int	everyone_ate(t_overseer *o)
 	i = 0;
 	while (i < o->number_of_philos)
 	{
+		pthread_mutex_lock(&o->write_mutex);
 		if (o->philos[i].ate < o->must_eat_amount)
+		{
+			pthread_mutex_unlock(&o->write_mutex);
 			return (0);
+		}
+		pthread_mutex_unlock(&o->write_mutex);
 		i++;
 	}
 	return (1);
@@ -261,12 +291,16 @@ int	ft_overseer(t_overseer *o)
 		{
 			if (get_relative_time(o->philos[i].last_eating_time2) > o->time_to_die)
 			{
+				pthread_mutex_lock(&o->death_mutex);
 				o->death = 1;
+				pthread_mutex_unlock(&o->death_mutex);
 				return (i + 1);
 			}
 			if (everyone_ate(o))
 			{
+				pthread_mutex_lock(&o->death_mutex);
 				o->death = 2;
+				pthread_mutex_unlock(&o->death_mutex);
 				return (-1);
 			}
 			i++;
