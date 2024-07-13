@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/13 02:03:38 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/13 16:36:48 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,8 @@ void	ft_usleep(size_t milisecs)
 	size_t	start;
 
 	start = what_time_is_it();
-	while ((what_time_is_it() - start) < milisecs)
-		usleep(400);
+	while ((what_time_is_it() - start) < milisecs / 1000)
+		usleep(500);
 }
 
 long	get_relative_time(struct timeval start_time)
@@ -102,12 +102,10 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 	i = 0;
 	while (i < o->number_of_philos)
 	{
-		//p[i].number_of_philos = ft_atoi(argv[1]);
-		//p[i].number_of_forks = ft_atoi(argv[1]);
 		p[i].philo_num = i + 1;
-		//p[i].time_to_die = ft_atoi(argv[2]);
 		p[i].time_to_eat = ft_atoi(argv[3]) * 1000;
 		p[i].time_to_sleep = ft_atoi(argv[4]) * 1000;
+		p[i].ate = 0;
 		p[i].left_fork = &o->forks[i];
 		p[i].right_fork = &o->forks[(i + 1) % o->number_of_philos];
 		p[i].write_mutex = &o->write_mutex;
@@ -152,6 +150,8 @@ void	create_threads(t_philo *p, t_overseer *o)
 	i = 0;
 	while (i < o->number_of_philos)
 	{
+		if (i % 2 == 0 || i + 1 == o->number_of_philos)
+			usleep(1);
 		if (pthread_create(&p[i].thread, NULL, eat_sleep_think, (void *)&p[i]) != 0)
 		{
 			perror("pthread_create error");
@@ -205,96 +205,74 @@ void	destroy_mutexes(t_overseer *o)
 	// It was copy/pasted from init, so double check if it is.
 }
 
-void	ft_usleep2(int time)
-{
-	int	iteration;
-
-	iteration  = time * 2;
-	//printf("Iteration is %d\n", iteration);
-	while(iteration--)
-		usleep(500);
-}
-
-void *eat_sleep_think2(void *arg) {
-    t_philo *p = (t_philo *)arg;
-    pthread_mutex_t *first_fork, *second_fork;
-
-    while (1) {
-        printf("Philo #%d trying to pick up first fork\n", p->philo_num);
-        first_fork = (p->philo_num % 2 == 0) ? p->right_fork : p->left_fork;
-        pthread_mutex_lock(first_fork);
-        printf("Philo #%d picked up first fork\n", p->philo_num);
-
-        printf("Philo #%d trying to pick up second fork\n", p->philo_num);
-        second_fork = (p->philo_num % 2 == 0) ? p->left_fork : p->right_fork;
-        pthread_mutex_lock(second_fork);
-        printf("Philo #%d picked up second fork\n", p->philo_num);
-
-        // Eating
-        usleep(200000);  // simulate eating
-        printf("%ld: Philo #%d woke up and says hello!\n", get_relative_time(p->last_eating_time), p->philo_num);
-        
-        pthread_mutex_unlock(second_fork);
-        pthread_mutex_unlock(first_fork);
-        printf("Philo #%d released both forks\n", p->philo_num);
-    }
-    return NULL;
-}
-
-
 void	*eat_sleep_think(void *arg)
 {
 	t_philo	*p;
 
 	p = (t_philo *)arg;
-	
-	while (1)
+
+	while (!*p->death)
 	{
-		//if (p->philo_num % 2 == 0)
-		//	usleep(100);
-		printf("%ld %d is thinking\n", get_relative_time(p->last_eating_time), p->philo_num);
+		if (!*p->death)
+			printf("%ld %d is thinking\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_lock(p->left_fork);
-		printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
+		if (!*p->death)
+			printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_lock(p->right_fork);
-		printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
-		printf("%ld %d is eating\n", get_relative_time(p->last_eating_time), p->philo_num);
+		if (!*p->death)
+			printf("%ld %d has taken a fork\n", get_relative_time(p->last_eating_time), p->philo_num);
+		if (!*p->death)
+			printf("%ld %d is eating\n", get_relative_time(p->last_eating_time), p->philo_num);
 		gettimeofday(&p->last_eating_time2, NULL);
-		usleep(p->time_to_eat);
+		ft_usleep(p->time_to_eat);
+		p->ate++;
+		//printf("philo #%d ate her meal #%d\n", p->philo_num, p->ate);
 		pthread_mutex_unlock(p->right_fork);
 		pthread_mutex_unlock(p->left_fork);
-		printf("%ld %d is sleeping\n", get_relative_time(p->last_eating_time), p->philo_num);
-		usleep(p->time_to_sleep);
+		if (!*p->death)
+			printf("%ld %d is sleeping\n", get_relative_time(p->last_eating_time), p->philo_num);
+		ft_usleep(p->time_to_sleep);
 	}
 	return (NULL);
 }
 
-void *eat_sleep_think3(void *arg) {
-    t_philo *p = (t_philo *)arg;
-    pthread_mutex_t *first_fork;
-    pthread_mutex_t *second_fork;
+int	everyone_ate(t_overseer *o)
+{
+	int	i;
 
-    while (1) {
-        if (p->philo_num % 2 == 0) {  // If last philosopher
-            first_fork = p->right_fork;  // Pick the lower-numbered fork first (1)
-            second_fork = p->left_fork;  // Then the higher (5)
-        } else {
-            first_fork = p->left_fork;  // Lower-numbered fork
-            second_fork = p->right_fork;  // Higher-numbered fork
-        }
-
-        pthread_mutex_lock(first_fork);
-        pthread_mutex_lock(second_fork);
-
-        // Eating
-        usleep(200000);  // simulate eating
-        printf("%ld: Philo #%d woke up and says hello!\n", get_relative_time(p->last_eating_time), p->philo_num);
-        
-        pthread_mutex_unlock(first_fork);
-        pthread_mutex_unlock(second_fork);
-    }
-    return NULL;
+	i = 0;
+	while (i < o->number_of_philos)
+	{
+		if (o->philos[i].ate < o->must_eat_amount)
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
+int	ft_overseer(t_overseer *o)
+{
+	int	i;
+	
+	while (1)
+	{
+		i = 0;
+		while (i < o->number_of_philos)
+		{
+			if (get_relative_time(o->philos[i].last_eating_time2) > o->time_to_die)
+			{
+				o->death = 1;
+				return (i + 1);
+			}
+			if (everyone_ate(o))
+			{
+				o->death = 2;
+				return (-1);
+			}
+			i++;
+		}
+	}
+}
 
 int	main(int argc, char **argv)
 {
@@ -320,7 +298,9 @@ int	main(int argc, char **argv)
 
 	create_threads(philo, &overseer);
 
-	//ft_overseer(&overseer);
+	int overseer_result = ft_overseer(&overseer);
+	if (overseer_result > 0)
+		printf("%ld %d died\n", get_relative_time(philo[overseer_result - 1].last_eating_time), overseer_result);
 
 	join_threads(philo, &overseer);
 

@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/13 02:00:03 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/13 15:11:54 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct s_philo
 	useconds_t		time_to_sleep;
 	//int				must_eat_amount;
 	int				*death;
+	int				ate;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*write_mutex;
