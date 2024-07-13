@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/13 20:46:32 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/13 22:50:17 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,66 @@ int	ft_atoi(const char *str)
 		str++;
 	}
 	return (sign * nbr);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while ((s1[i] || s2[i]) && i < n)
+	{
+		if ((unsigned char)s1[i] != (unsigned char)s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
+	}
+	return (0);
+}
+
+size_t	ft_strlen(const char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
+int	ft_is_pos_num(char *str)
+{
+	int	i;
+
+	if (!ft_strncmp(str, "+", 2) || !ft_strncmp(str, "-", 2))
+		return (0);
+	i = 0;
+	if (ft_strlen(str) == 0)
+		return (0);
+	while (str[i])
+	{
+		if ((str[i] != '-' || i != 0) && (str[i] != '+'
+				|| i != 0) && (str[i] < '0' || str[i] > '9'))
+			return (0);
+		i++;
+	}
+	if (ft_atoi(str) <= 0)
+		return (0);
+	else
+		return (1);
+}
+
+int	validity_check(int argc, char **argv)
+{
+	int	i;
+
+	i = 1;
+	while (i < argc)
+	{
+		if (!ft_is_pos_num(argv[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 size_t	what_time_is_it(void)
@@ -299,7 +359,7 @@ int	main(int argc, char **argv)
 	t_overseer	overseer;
 	int			overseer_result;
 
-	if (argc < 5 || argc > 6)
+	if (argc < 5 || argc > 6 || !validity_check(argc, argv))
 		return (printf("Usage is wrong.\n"), 1);
 	overseer.number_of_philos = ft_atoi(argv[1]);
 	philo = malloc(sizeof(t_philo) * overseer.number_of_philos);
