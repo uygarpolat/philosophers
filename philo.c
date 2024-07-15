@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/15 04:15:08 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/15 14:27:46 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,24 +108,7 @@ int	validity_check(int argc, char **argv)
 	}
 	return (1);
 }
-/*
-size_t	what_time_is_it(void)
-{
-	struct timeval	time;
 
-	gettimeofday(&time, NULL);
-	return (time.tv_sec * 1000 + time.tv_usec / 1000);
-}
-
-void	ft_usleep(size_t milisecs)
-{
-	size_t	start;
-
-	start = what_time_is_it();
-	while ((what_time_is_it() - start) < milisecs)
-		usleep(1);
-}
-*/
 size_t what_time_is_it_us(void)
 {
 	struct timeval time;
@@ -143,12 +126,6 @@ void ft_usleep(size_t milisecs)
 	while ((what_time_is_it_us() - start) < milisecs_us)
 		usleep(1);
 }
-
-
-
-
-
-
 
 size_t	get_relative_time(struct timeval start_time)
 {
@@ -307,7 +284,7 @@ void	*eat_sleep_think(void *arg)
 
 	p = (t_philo *)arg;
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
-		usleep(p->time_to_eat * 500);
+		usleep(p->time_to_eat * 100);
 	while (1)
 	{
 		pthread_mutex_lock(p->death_mutex);
@@ -328,9 +305,9 @@ void	*eat_sleep_think(void *arg)
 		if (!*p->death)
 			printf("%zu %d is eating\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_unlock(p->death_mutex);
-		pthread_mutex_lock(p->time_mutex);
+		//pthread_mutex_lock(p->time_mutex);
 		gettimeofday(&p->last_eating_time2, NULL);
-		pthread_mutex_unlock(p->time_mutex);
+		//pthread_mutex_unlock(p->time_mutex);
 		ft_usleep(p->time_to_eat);
 		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
