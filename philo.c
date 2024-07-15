@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/15 14:27:46 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/15 21:11:06 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void ft_usleep(size_t milisecs)
 
 	start = what_time_is_it_us();
 	while ((what_time_is_it_us() - start) < milisecs_us)
-		usleep(1);
+		usleep(500);
 }
 
 size_t	get_relative_time(struct timeval start_time)
@@ -283,6 +283,12 @@ void	*eat_sleep_think(void *arg)
 	t_philo	*p;
 
 	p = (t_philo *)arg;
+	//gettimeofday(&p->last_eating_time, NULL);
+	//pthread_mutex_lock(p->time_mutex);
+	//gettimeofday(&p->last_eating_time2, NULL);
+	//pthread_mutex_unlock(p->time_mutex);
+	//printf("%zu %d is created\n", get_relative_time(p->last_eating_time), p->philo_num);
+
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 		usleep(p->time_to_eat * 100);
 	while (1)
@@ -305,9 +311,9 @@ void	*eat_sleep_think(void *arg)
 		if (!*p->death)
 			printf("%zu %d is eating\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_unlock(p->death_mutex);
-		//pthread_mutex_lock(p->time_mutex);
+		pthread_mutex_lock(p->time_mutex);
 		gettimeofday(&p->last_eating_time2, NULL);
-		//pthread_mutex_unlock(p->time_mutex);
+		pthread_mutex_unlock(p->time_mutex);
 		ft_usleep(p->time_to_eat);
 		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
@@ -354,6 +360,7 @@ void	ft_overseer(t_overseer *o)
 	int	i;
 	size_t	test;
 
+	ft_usleep(5);
 	while (1)
 	{
 		i = 0;
@@ -398,8 +405,6 @@ int	main(int argc, char **argv)
 	create_mutexes(&overseer);
 	create_threads(philo, &overseer);
 	ft_overseer(&overseer);
-	//if (overseer_result > 0)
-	//	printf("%zu %d died\n", get_relative_time(philo[overseer_result - 1].last_eating_time), overseer_result);
 	join_threads(philo, &overseer);
 	destroy_mutexes(&overseer);
 	free(philo);
