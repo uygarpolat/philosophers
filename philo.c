@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/15 03:24:27 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/15 03:44:21 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ void ft_usleep(size_t milisecs)
 
 	start = what_time_is_it_us();
 	while ((what_time_is_it_us() - start) < milisecs_us)
-		usleep(100);
+		usleep(1);
 }
 
 
@@ -261,7 +261,6 @@ void	join_threads(t_philo *p, t_overseer *o)
 			perror("pthread_join error");
 			return ;
 		}
-		printf("Philo #%d successfully joined!\n", i + 1);
 		i++;
 	}
 }
@@ -278,7 +277,6 @@ void	destroy_mutexes(t_overseer *o)
 			perror("pthread_mutex_destroy error");
 			return ;
 		}
-		printf("Fork mutex #%d successfully destroyed!\n", i + 1);
 		i++;
 	}
 	if (pthread_mutex_destroy(&o->write_mutex) != 0)
@@ -286,19 +284,16 @@ void	destroy_mutexes(t_overseer *o)
 		perror("pthread_mutex_destroy error");
 		return ;
 	}
-	printf("Write mutex successfully destroyed!\n");
 	if (pthread_mutex_destroy(&o->death_mutex) != 0)
 	{
 		perror("pthread_mutex_destroy error");
 		return ;
 	}
-	printf("Death mutex successfully destroyed!\n");
 	if (pthread_mutex_destroy(&o->time_mutex) != 0)
 	{
 		perror("pthread_mutex_destroy error");
 		return ;
 	}
-	printf("Time mutex successfully destroyed!\n");
 
 
 
