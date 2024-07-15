@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/15 21:11:06 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/15 22:50:59 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,12 +119,25 @@ size_t what_time_is_it_us(void)
 
 void ft_usleep(size_t milisecs)
 {
+/*	size_t start;
+	size_t milisecs_us = milisecs * 1000;
+	size_t milisecs_us2 = milisecs * 990;
+	usleep(milisecs_us2);
+
+	start = what_time_is_it_us();
+	while ((what_time_is_it_us() - start) < milisecs_us)
+		usleep(750);*/
+	usleep(milisecs * 1000);
+}
+
+void ft_usleep2(size_t milisecs)
+{
 	size_t start;
 	size_t milisecs_us = milisecs * 1000;
 
 	start = what_time_is_it_us();
 	while ((what_time_is_it_us() - start) < milisecs_us)
-		usleep(500);
+		usleep(750);
 }
 
 size_t	get_relative_time(struct timeval start_time)
@@ -164,7 +177,7 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 		p[i].philo_num = i + 1;
 		p[i].number_of_philos = ft_atoi(argv[1]);
 		p[i].time_to_eat = ft_atoi(argv[3]);
-		p[i].time_to_sleep = ft_atoi(argv[4]); //<------------------- This had "* 1000" at the end. If anything breaks, put that back!!!!!!!!!!!!!!!!!!!
+		p[i].time_to_sleep = ft_atoi(argv[4]);
 		p[i].ate = 0;
 		p[i].left_fork = &o->forks[i];
 		p[i].right_fork = &o->forks[(i + 1) % o->number_of_philos];
@@ -207,7 +220,6 @@ void	create_mutexes(t_overseer *o)
 		perror("pthread_mutex_init error");
 		return ;
 	}
-
 }
 
 void	create_threads(t_philo *p, t_overseer *o)
@@ -271,9 +283,6 @@ void	destroy_mutexes(t_overseer *o)
 		perror("pthread_mutex_destroy error");
 		return ;
 	}
-
-
-
 	// Is checking if it is equal to zero how you handle errors in destroying?
 	// It was copy/pasted from the init function, so double check if it is.
 }
@@ -283,11 +292,6 @@ void	*eat_sleep_think(void *arg)
 	t_philo	*p;
 
 	p = (t_philo *)arg;
-	//gettimeofday(&p->last_eating_time, NULL);
-	//pthread_mutex_lock(p->time_mutex);
-	//gettimeofday(&p->last_eating_time2, NULL);
-	//pthread_mutex_unlock(p->time_mutex);
-	//printf("%zu %d is created\n", get_relative_time(p->last_eating_time), p->philo_num);
 
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 		usleep(p->time_to_eat * 100);
@@ -360,7 +364,6 @@ void	ft_overseer(t_overseer *o)
 	int	i;
 	size_t	test;
 
-	ft_usleep(5);
 	while (1)
 	{
 		i = 0;
@@ -400,9 +403,9 @@ int	main(int argc, char **argv)
 	philo = malloc(sizeof(t_philo) * overseer.number_of_philos);
 	overseer.philos = philo;
 	overseer.forks = malloc(sizeof(pthread_mutex_t) * overseer.number_of_philos);
+	create_mutexes(&overseer);
 	initialize_overseer(&overseer, argc, argv);
 	initialize_table(philo, &overseer, argv);
-	create_mutexes(&overseer);
 	create_threads(philo, &overseer);
 	ft_overseer(&overseer);
 	join_threads(philo, &overseer);
