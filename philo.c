@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/15 22:50:59 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/16 02:55:07 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,25 +119,12 @@ size_t what_time_is_it_us(void)
 
 void ft_usleep(size_t milisecs)
 {
-/*	size_t start;
-	size_t milisecs_us = milisecs * 1000;
-	size_t milisecs_us2 = milisecs * 990;
-	usleep(milisecs_us2);
-
-	start = what_time_is_it_us();
-	while ((what_time_is_it_us() - start) < milisecs_us)
-		usleep(750);*/
-	usleep(milisecs * 1000);
-}
-
-void ft_usleep2(size_t milisecs)
-{
 	size_t start;
-	size_t milisecs_us = milisecs * 1000;
+	size_t nanosecs = milisecs * 1000;
 
 	start = what_time_is_it_us();
-	while ((what_time_is_it_us() - start) < milisecs_us)
-		usleep(750);
+	while ((what_time_is_it_us() - start) < nanosecs)
+		usleep(500);
 }
 
 size_t	get_relative_time(struct timeval start_time)
@@ -225,7 +212,9 @@ void	create_mutexes(t_overseer *o)
 void	create_threads(t_philo *p, t_overseer *o)
 {
 	int	i;
+	struct timeval	start_time;
 
+	gettimeofday(&start_time, NULL);
 	i = 0;
 	while (i < o->number_of_philos)
 	{
@@ -292,9 +281,10 @@ void	*eat_sleep_think(void *arg)
 	t_philo	*p;
 
 	p = (t_philo *)arg;
-
+	if (p->number_of_philos == 1)
+		return (NULL);
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
-		usleep(p->time_to_eat * 100);
+		ft_usleep(p->time_to_eat / 10);
 	while (1)
 	{
 		pthread_mutex_lock(p->death_mutex);
@@ -362,7 +352,7 @@ int	everyone_ate(t_overseer *o)
 void	ft_overseer(t_overseer *o)
 {
 	int	i;
-	size_t	test;
+	size_t	time_since_start_of_meal;
 
 	while (1)
 	{
@@ -370,9 +360,9 @@ void	ft_overseer(t_overseer *o)
 		while (i < o->number_of_philos)
 		{
 			pthread_mutex_lock(&o->time_mutex);
-			test = get_relative_time(o->philos[i].last_eating_time2);
+			time_since_start_of_meal = get_relative_time(o->philos[i].last_eating_time2);
 			pthread_mutex_unlock(&o->time_mutex);
-			if (test > o->time_to_die)
+			if (time_since_start_of_meal > o->time_to_die)
 			{
 				pthread_mutex_lock(&o->death_mutex);
 				o->death = 1;
@@ -398,7 +388,10 @@ int	main(int argc, char **argv)
 	t_overseer	overseer;
 
 	if (argc < 5 || argc > 6 || !validity_check(argc, argv))
-		return (printf("Usage is wrong.\n"), 1);
+	{
+		write(2, "Usage error.\n", 13);
+		return (0);
+	}
 	overseer.number_of_philos = ft_atoi(argv[1]);
 	philo = malloc(sizeof(t_philo) * overseer.number_of_philos);
 	overseer.philos = philo;
