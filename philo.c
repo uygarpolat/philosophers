@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/16 12:56:45 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/16 15:56:44 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void	initialize_overseer(t_overseer *o, int argc, char **argv)
 	if (argc == 6)
 		o->must_eat_amount = ft_atoi(argv[5]);
 	else
-		o->must_eat_amount = INT_MAX;
+		o->must_eat_amount = 0;
 }
 
 void	initialize_table(t_philo *p, t_overseer *o, char **argv)
@@ -172,8 +172,8 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 		p[i].death_mutex = &o->death_mutex;
 		p[i].time_mutex = &o->time_mutex;
 		p[i].death = &o->death;
-		gettimeofday(&p[i].last_eating_time, NULL);
-		gettimeofday(&p[i].last_eating_time2, NULL);
+		//gettimeofday(&p[i].last_eating_time, NULL);
+		//gettimeofday(&p[i].last_eating_time2, NULL);
 		i++;
 	}
 }
@@ -218,6 +218,8 @@ void	create_threads(t_philo *p, t_overseer *o)
 	i = 0;
 	while (i < o->number_of_philos)
 	{
+		p[i].last_eating_time = start_time;
+		p[i].last_eating_time2 = start_time;
 		if (pthread_create(&p[i].thread, NULL, eat_sleep_think, (void *)&p[i]) != 0)
 		{
 			perror("pthread_create error");
@@ -371,7 +373,7 @@ void	ft_overseer(t_overseer *o)
 				printf("%zu %d died\n", get_relative_time(o->philos[i].last_eating_time), i + 1);
 				return ;
 			}
-			if (everyone_ate(o))
+			if (o->must_eat_amount && everyone_ate(o))
 			{
 				pthread_mutex_lock(&o->death_mutex);
 				o->death = 2;
