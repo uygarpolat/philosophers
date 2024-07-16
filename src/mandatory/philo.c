@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/16 19:55:12 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/17 02:01:24 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,8 +173,6 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 		p[i].death_mutex = &o->death_mutex;
 		p[i].time_mutex = &o->time_mutex;
 		p[i].death = &o->death;
-		//gettimeofday(&p[i].last_eating_time, NULL);
-		//gettimeofday(&p[i].last_eating_time2, NULL);
 		i++;
 	}
 }
@@ -204,16 +202,9 @@ void	join_threads(t_philo *p, t_overseer *o)
 {
 	int	i;
 
-	i = 0;
-	while (i < o->number_of_philos)
-	{
-		if (pthread_join(p[i].thread, NULL) != 0)
-		{
-			perror("pthread_join error");
-			return ;
-		}
-		i++;
-	}
+	i = -1;
+	while (++i < o->number_of_philos)
+		pthread_join(p[i].thread, NULL);
 }
 
 void	destroy_mutexes(t_overseer *o)
@@ -309,6 +300,8 @@ int	everyone_ate(t_overseer *o)
 	int	i;
 
 	i = 0;
+	if (!o->must_eat_amount)
+		return (0);
 	while (i < o->number_of_philos)
 	{
 		pthread_mutex_lock(&o->write_mutex);
@@ -320,6 +313,9 @@ int	everyone_ate(t_overseer *o)
 		pthread_mutex_unlock(&o->write_mutex);
 		i++;
 	}
+	pthread_mutex_lock(&o->death_mutex);
+	o->death = 2;
+	pthread_mutex_unlock(&o->death_mutex);
 	return (1);
 }
 
@@ -330,30 +326,41 @@ void	ft_overseer(t_overseer *o)
 
 	while (1)
 	{
-		i = 0;
-		while (i < o->number_of_philos)
+		i = -1;
+		while (++i < o->number_of_philos)
 		{
 			pthread_mutex_lock(&o->time_mutex);
-			time_since_start_of_meal = get_relative_time(o->philos[i].last_eating_time2);
+			time_since_start_of_meal = get_relative_time
+				(o->philos[i].last_eating_time2);
 			pthread_mutex_unlock(&o->time_mutex);
 			if (time_since_start_of_meal >= o->time_to_die)
 			{
 				pthread_mutex_lock(&o->death_mutex);
 				o->death = 1;
 				pthread_mutex_unlock(&o->death_mutex);
-				printf("%zu %d died\n", get_relative_time(o->philos[i].last_eating_time), i + 1);
+				printf("%zu %d died\n", get_relative_time
+					(o->philos[i].last_eating_time), i + 1);
 				return ;
 			}
-			if (o->must_eat_amount && everyone_ate(o))
-			{
-				pthread_mutex_lock(&o->death_mutex);
-				o->death = 2;
-				pthread_mutex_unlock(&o->death_mutex);
+			if (everyone_ate(o))
 				return ;
-			}
-			i++;
 		}
 	}
+}
+
+int	handle_memory(t_philo **philo, t_overseer *overseer)
+{
+	*philo = malloc(sizeof(t_philo) * overseer->number_of_philos);
+	if (*philo == NULL)
+		return (0);
+	overseer->forks = malloc(sizeof(pthread_mutex_t)
+			* overseer->number_of_philos);
+	if (overseer->forks == NULL)
+	{
+		free(*philo);
+		return (0);
+	}
+	return (1);
 }
 
 int	main(int argc, char **argv)
@@ -362,16 +369,14 @@ int	main(int argc, char **argv)
 	t_overseer	overseer;
 
 	if (argc < 5 || argc > 6 || !validity_check(argc, argv))
-	{
-		write(2, "Usage error.\n", 13);
-		return (0);
-	}
+		return (write(2, "Usage error.\n", 13), 1);
 	overseer.number_of_philos = ft_atoi(argv[1]);
-	philo = malloc(sizeof(t_philo) * overseer.number_of_philos);
+	philo = NULL;
+	if (!handle_memory(&philo, &overseer))
+		return (write(2, "Memory allocation failed.\n", 26), 1);
 	overseer.philos = philo;
-	overseer.forks = malloc(sizeof(pthread_mutex_t) * overseer.number_of_philos);
 	if (!create_mutexes(&overseer))
-		return (write(2, "Failed to initialize mutex\n", 28), 1);
+		return (write(2, "Failed to initialize mutex.\n", 28), 1);
 	initialize_overseer(&overseer, argc, argv);
 	initialize_table(philo, &overseer, argv);
 	create_threads(philo, &overseer);
