@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/16 02:55:07 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/16 12:56:45 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,14 +283,11 @@ void	*eat_sleep_think(void *arg)
 	p = (t_philo *)arg;
 	if (p->number_of_philos == 1)
 		return (NULL);
+	printf("%zu %d is thinking\n", get_relative_time(p->last_eating_time), p->philo_num);
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 		ft_usleep(p->time_to_eat / 10);
 	while (1)
 	{
-		pthread_mutex_lock(p->death_mutex);
-		if (!*p->death)
-			printf("%zu %d is thinking\n", get_relative_time(p->last_eating_time), p->philo_num);
-		pthread_mutex_unlock(p->death_mutex);
 		pthread_mutex_lock(p->left_fork);
 		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
@@ -319,6 +316,10 @@ void	*eat_sleep_think(void *arg)
 		pthread_mutex_unlock(p->right_fork);
 		pthread_mutex_unlock(p->left_fork);
 		ft_usleep(p->time_to_sleep);
+		pthread_mutex_lock(p->death_mutex);
+		if (!*p->death)
+			printf("%zu %d is thinking\n", get_relative_time(p->last_eating_time), p->philo_num);
+		pthread_mutex_unlock(p->death_mutex);
 		pthread_mutex_lock(p->death_mutex);
 		if (*p->death)
 		{
@@ -362,7 +363,7 @@ void	ft_overseer(t_overseer *o)
 			pthread_mutex_lock(&o->time_mutex);
 			time_since_start_of_meal = get_relative_time(o->philos[i].last_eating_time2);
 			pthread_mutex_unlock(&o->time_mutex);
-			if (time_since_start_of_meal > o->time_to_die)
+			if (time_since_start_of_meal >= o->time_to_die)
 			{
 				pthread_mutex_lock(&o->death_mutex);
 				o->death = 1;
