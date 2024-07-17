@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/17 18:03:47 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/17 22:02:35 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,10 +171,8 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 		p[i].right_fork = &o->forks[(i + 1) % o->number_of_philos];
 		p[i].write_mutex = &o->write_mutex[i];
 		p[i].death_mutex = &o->death_mutex;
-		p[i].time_mutex = &o->time_mutex;
+		p[i].time_mutex = &o->time_mutex[i];
 		p[i].death = &o->death;
-		//gettimeofday(&p[i].last_eating_time, NULL);
-		//gettimeofday(&p[i].last_eating_time2, NULL);
 		i++;
 	}
 }
@@ -209,50 +207,6 @@ void	join_threads(t_philo *p, t_overseer *o)
 		pthread_join(p[i].thread, NULL);
 }
 
-void	destroy_mutexes(t_overseer *o)
-{
-	int	i;
-
-	i = 0;
-	while (i < o->number_of_philos)
-	{
-		if (pthread_mutex_destroy(&o->forks[i]) != 0)
-		{
-			perror("pthread_mutex_destroy error");
-			return ;
-		}
-		i++;
-	}
-	i = 0;
-	while (i < o->number_of_philos)
-	{
-		if (pthread_mutex_destroy(&o->write_mutex[i]) != 0)
-		{
-			perror("pthread_mutex_destroy error");
-			return ;
-		}
-		i++;
-	}
-
-	//if (pthread_mutex_destroy(&o->write_mutex) != 0)
-	//{
-	//	perror("pthread_mutex_destroy error");
-	//	return ;
-	//}
-	if (pthread_mutex_destroy(&o->death_mutex) != 0)
-	{
-		perror("pthread_mutex_destroy error");
-		return ;
-	}
-	if (pthread_mutex_destroy(&o->time_mutex) != 0)
-	{
-		perror("pthread_mutex_destroy error");
-		return ;
-	}
-	// Is checking if it is equal to zero how you handle errors in destroying?
-	// It was copy/pasted from the init function, so double check if it is.
-}
-
 void	*eat_sleep_think(void *arg)
 {
 	t_philo	*p;
@@ -281,21 +235,21 @@ void	*eat_sleep_think(void *arg)
 		if (!*p->death)
 			printf("%zu %d is eating\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_unlock(p->death_mutex);
-		//pthread_mutex_lock(p->time_mutex);
-		//gettimeofday(&p->last_eating_time2, NULL);
-		//pthread_mutex_unlock(p->time_mutex);
-		pthread_mutex_lock(p->write_mutex);
+		pthread_mutex_lock(p->time_mutex);
 		gettimeofday(&p->last_eating_time2, NULL);
-		p->ate++;
-		pthread_mutex_unlock(p->write_mutex);
+		pthread_mutex_unlock(p->time_mutex);
+		//pthread_mutex_lock(p->write_mutex);
+		//gettimeofday(&p->last_eating_time2, NULL);
+		//p->ate++;
+		//pthread_mutex_unlock(p->write_mutex);
 		ft_usleep(p->time_to_eat, p->number_of_philos);
 		pthread_mutex_lock(p->death_mutex);
 		if (!*p->death)
 			printf("%zu %d is sleeping\n", get_relative_time(p->last_eating_time), p->philo_num);
 		pthread_mutex_unlock(p->death_mutex);
-		//pthread_mutex_lock(p->write_mutex);
-		//p->ate++;
-		//pthread_mutex_unlock(p->write_mutex);
+		pthread_mutex_lock(p->write_mutex);
+		p->ate++;
+		pthread_mutex_unlock(p->write_mutex);
 		pthread_mutex_unlock(p->right_fork);
 		pthread_mutex_unlock(p->left_fork);
 		ft_usleep(p->time_to_sleep, p->number_of_philos);
@@ -348,10 +302,10 @@ void	ft_overseer(t_overseer *o)
 		i = -1;
 		while (++i < o->number_of_philos)
 		{
-			pthread_mutex_lock(&o->write_mutex[i]);
+			pthread_mutex_lock(&o->time_mutex[i]);
 			time_since_start_of_meal = get_relative_time
 				(o->philos[i].last_eating_time2);
-			pthread_mutex_unlock(&o->write_mutex[i]);
+			pthread_mutex_unlock(&o->time_mutex[i]);
 			if (time_since_start_of_meal >= o->time_to_die)
 			{
 				pthread_mutex_lock(&o->death_mutex);
@@ -367,23 +321,30 @@ void	ft_overseer(t_overseer *o)
 	}
 }
 
-int	handle_memory(t_philo **philo, t_overseer *overseer)
+int	handle_memory(t_philo **philo, t_overseer *o)
 {
-	*philo = malloc(sizeof(t_philo) * overseer->number_of_philos);
+	*philo = malloc(sizeof(t_philo) * o->number_of_philos);
 	if (*philo == NULL)
 		return (0);
-	overseer->forks = malloc(sizeof(pthread_mutex_t)
-			* overseer->number_of_philos);
-	if (overseer->forks == NULL)
+	o->forks = malloc(sizeof(pthread_mutex_t) * o->number_of_philos);
+	if (o->forks == NULL)
 	{
 		free(*philo);
 		return (0);
 	}
-	overseer->write_mutex = malloc(sizeof(pthread_mutex_t) * overseer->number_of_philos);
-	if (overseer->write_mutex == NULL)
+	o->write_mutex = malloc(sizeof(pthread_mutex_t) * o->number_of_philos);
+	if (o->write_mutex == NULL)
 	{
 		free(*philo);
-		free(overseer->forks);
+		free(o->forks);
+		return (0);
+	}
+	o->time_mutex = malloc(sizeof(pthread_mutex_t) * o->number_of_philos);
+	if (o->time_mutex == NULL)
+	{
+		free(*philo);
+		free(o->forks);
+		free(o->write_mutex);
 		return (0);
 	}
 	return (1);
@@ -408,9 +369,6 @@ int	main(int argc, char **argv)
 	create_threads(philo, &overseer);
 	ft_overseer(&overseer);
 	join_threads(philo, &overseer);
-	destroy_mutexes(&overseer);
-	free(philo);
-	free(overseer.forks);
-	free(overseer.write_mutex);
+	free_and_destroy_mutexes(philo, &overseer);
 	return (0);
 }
