@@ -6,7 +6,7 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/16 17:57:36 by upolat            #+#    #+#              #
-#    Updated: 2024/07/17 20:24:26 by upolat           ###   ########.fr        #
+#    Updated: 2024/07/18 00:56:19 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,13 @@ SRC_DIR = src/mandatory
 
 SOURCES =		$(SRC_DIR)/philo.c \
 				$(SRC_DIR)/create_mutexes.c \
+				$(SRC_DIR)/cleanup.c \
+				$(SRC_DIR)/eat_sleep_think.c \
+				$(SRC_DIR)/overseer.c \
+				$(SRC_DIR)/time.c \
+				$(SRC_DIR)/utils.c \
+				$(SRC_DIR)/initialize.c \
+				$(SRC_DIR)/threads.c \
 
 OBJECTS = $(SOURCES:.c=.o)
 
