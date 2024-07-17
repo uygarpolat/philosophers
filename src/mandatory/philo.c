@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/17 16:09:51 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/17 17:00:09 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,7 +260,9 @@ void	*eat_sleep_think(void *arg)
 	p = (t_philo *)arg;
 	if (p->number_of_philos == 1)
 		return (NULL);
+	pthread_mutex_lock(p->death_mutex);
 	printf("%zu %d is thinking\n", get_relative_time(p->last_eating_time), p->philo_num);
+	pthread_mutex_unlock(p->death_mutex);
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 		ft_usleep(p->time_to_eat / 10, p->number_of_philos);
 	while (1)
