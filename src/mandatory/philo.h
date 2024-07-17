@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/16 18:55:24 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/17 12:32:20 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef struct s_overseer
 	int				must_eat_amount;
 	size_t			time_to_die;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	write_mutex;
+	pthread_mutex_t	*write_mutex; // This was changed from write_mutex to *write_mutex for the slowness refactor.
 	pthread_mutex_t	death_mutex;
 	pthread_mutex_t	time_mutex;
 	t_philo			*philos;
