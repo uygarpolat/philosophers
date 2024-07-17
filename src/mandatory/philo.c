@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 00:55:12 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/18 01:53:19 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,18 @@ int	main(int argc, char **argv)
 	overseer.number_of_philos = ft_atoi(argv[1]);
 	philo = NULL;
 	if (!handle_memory(&philo, &overseer))
-		return (write(2, "Memory allocation failed.\n", 26), 1);
+		return (write(2, "Failed to allocate memory.\n", 27), 1);
 	overseer.philos = philo;
 	if (!create_mutexes(&overseer))
-		return (write(2, "Failed to initialize mutex.\n", 28), 1);
+	{
+		free_malloc(philo, &overseer);
+		write(2, "Failed to initialize mutex.\n", 28);
+		return (1);
+	}
 	initialize_overseer(&overseer, argc, argv);
 	initialize_table(philo, &overseer, argv);
-	create_threads(philo, &overseer);
+	if (!create_threads(philo, &overseer))
+		return (write(2, "Failed to create threads.\n", 26), 1);
 	ft_overseer(&overseer);
 	join_threads(philo, &overseer);
 	free_and_destroy_mutexes(philo, &overseer);

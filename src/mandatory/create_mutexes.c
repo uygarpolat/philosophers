@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 18:52:08 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 00:25:18 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/18 01:21:51 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ static int	init_fork_mutexes(t_overseer *o)
 		{
 			while (--i >= 0)
 				pthread_mutex_destroy(&o->forks[i]);
-			write(2, "failed to initialize mutex\n", 28);
 			return (0);
 		}
 	}
@@ -41,7 +40,6 @@ static int	init_write_mutexes(t_overseer *o)
 		{
 			while (--i >= 0)
 				pthread_mutex_destroy(&o->write_mutex[i]);
-			write(2, "failed to initialize mutex\n", 28);
 			return (0);
 		}
 	}
@@ -59,7 +57,6 @@ static int	init_time_mutexes(t_overseer *o)
 		{
 			while (--i >= 0)
 				pthread_mutex_destroy(&o->time_mutex[i]);
-			write(2, "failed to initialize mutex\n", 28);
 			return (0);
 		}
 	}

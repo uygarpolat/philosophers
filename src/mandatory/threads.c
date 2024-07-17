@@ -6,13 +6,13 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:54:41 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 00:54:59 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/18 01:54:44 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	create_threads(t_philo *p, t_overseer *o)
+int	create_threads(t_philo *p, t_overseer *o)
 {
 	int				i;
 	struct timeval	start_time;
@@ -26,11 +26,15 @@ void	create_threads(t_philo *p, t_overseer *o)
 		if (pthread_create(&p[i].thread, NULL,
 				eat_sleep_think, (void *)&p[i]) != 0)
 		{
-			perror("pthread_create error");
-			return ;
+			o->death = 1;
+			while (--i >= 0)
+				pthread_join(p[i].thread, NULL);
+			free_and_destroy_mutexes(p, o);
+			return (0);
 		}
 		i++;
 	}
+	return (1);
 }
 
 void	join_threads(t_philo *p, t_overseer *o)

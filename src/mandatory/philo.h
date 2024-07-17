@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 01:00:11 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/18 01:53:47 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,14 @@ void	free_and_destroy_mutexes(t_philo *philo, t_overseer *overseer);
 void	*eat_sleep_think(void *arg);
 void	initialize_overseer(t_overseer *o, int argc, char **argv);
 void	initialize_table(t_philo *p, t_overseer *o, char **argv);
-void	create_threads(t_philo *p, t_overseer *o);
+int		create_threads(t_philo *p, t_overseer *o);
 void	join_threads(t_philo *p, t_overseer *o);
 void	ft_overseer(t_overseer *o);
 // Time
 size_t	get_relative_time(struct timeval start_time);
 void	ft_usleep(size_t milisecs, int number_of_philos);
 // Utils
+void	free_malloc(t_philo *philo, t_overseer *overseer);
 int		ft_atoi(const char *str);
 int		validity_check(int argc, char **argv);
 

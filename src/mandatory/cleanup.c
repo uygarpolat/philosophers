@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:23:55 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 00:26:11 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/18 01:37:20 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,14 @@ void	destroy_time_mutexes(t_overseer *o)
 	i = -1;
 	while (++i < o->number_of_philos)
 		pthread_mutex_destroy(&o->time_mutex[i]);
+}
+
+void	free_malloc(t_philo *philo, t_overseer *overseer)
+{
+	free(philo);
+	free(overseer->forks);
+	free(overseer->write_mutex);
+	free(overseer->time_mutex);
 }
 
 void	free_and_destroy_mutexes(t_philo *philo, t_overseer *overseer)
