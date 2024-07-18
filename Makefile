@@ -6,7 +6,7 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/16 17:57:36 by upolat            #+#    #+#              #
-#    Updated: 2024/07/18 14:12:41 by upolat           ###   ########.fr        #
+#    Updated: 2024/07/18 15:24:20 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ SOURCES =		$(SRC_DIR)/philo.c \
 
 OBJECTS = $(SOURCES:.c=.o)
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
