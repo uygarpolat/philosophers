@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:37:49 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 00:38:36 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 02:42:15 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,18 @@ static size_t	what_time_is_it_us(void)
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	return (time.tv_sec * 1000000 + time.tv_usec);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
 void	ft_usleep(size_t milisecs, int number_of_philos)
 {
 	size_t	start;
 	size_t	nanosecs;
-
-	nanosecs = milisecs * 1000;
+	
+	nanosecs = milisecs;
 	start = what_time_is_it_us();
 	while ((what_time_is_it_us() - start) < nanosecs)
-		usleep(2 * number_of_philos);
+		usleep(number_of_philos * 2);
 }
 
 size_t	get_relative_time(struct timeval start_time)
