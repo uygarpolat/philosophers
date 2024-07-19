@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 18:52:08 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 01:21:51 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 13:30:54 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,14 @@ int	create_mutexes(t_overseer *o)
 		destroy_fork_mutexes(o);
 		destroy_write_mutexes(o);
 		destroy_time_mutexes(o);
+		return (0);
+	}
+	if (pthread_mutex_init(&o->print_mutex, NULL) != 0)
+	{
+		destroy_fork_mutexes(o);
+		destroy_write_mutexes(o);
+		destroy_time_mutexes(o);
+		pthread_mutex_destroy(&o->death_mutex);
 		return (0);
 	}
 	return (1);

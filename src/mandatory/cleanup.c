@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:23:55 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 01:37:20 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 13:31:39 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	free_and_destroy_mutexes(t_philo *philo, t_overseer *overseer)
 	destroy_write_mutexes(overseer);
 	destroy_time_mutexes(overseer);
 	pthread_mutex_destroy(&overseer->death_mutex);
+	pthread_mutex_destroy(&overseer->print_mutex);
 	free(philo);
 	free(overseer->forks);
 	free(overseer->write_mutex);

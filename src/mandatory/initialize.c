@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:50:05 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 00:50:25 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 13:21:37 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 		p[i].right_fork = &o->forks[(i + 1) % o->number_of_philos];
 		p[i].write_mutex = &o->write_mutex[i];
 		p[i].death_mutex = &o->death_mutex;
+		p[i].print_mutex = &o->print_mutex;
 		p[i].time_mutex = &o->time_mutex[i];
 		p[i].death = &o->death;
 		i++;

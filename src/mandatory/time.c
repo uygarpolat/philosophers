@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:37:49 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/19 02:42:15 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 14:17:48 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ void	ft_usleep(size_t milisecs, int number_of_philos)
 size_t	get_relative_time(struct timeval start_time)
 {
 	struct timeval	current_time;
-	long			seconds;
-	long			useconds;
+	long	seconds;
+	long	useconds;
 
 	gettimeofday(&current_time, NULL);
 	seconds = current_time.tv_sec - start_time.tv_sec;
