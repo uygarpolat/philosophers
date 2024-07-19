@@ -6,11 +6,12 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 01:53:19 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 18:35:14 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+#include <fcntl.h> // <----------------- DELETE THIS!
 
 int	handle_memory(t_philo **philo, t_overseer *o)
 {
