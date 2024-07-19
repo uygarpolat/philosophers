@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/19 17:06:58 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 21:08:40 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,10 @@ static void	write_state(char *str, t_philo *p)
 static int	threads_initial_check(t_philo *p)
 {
 	if (p->number_of_philos == 1)
+	{
+		write_state("has taken a fork", p);
 		return (0);
+	}
 	pthread_mutex_lock(p->print_mutex);
 	printf("%zu %d is thinking\n", what_time_is_it()
 		- p->last_eating_time, p->philo_num);
