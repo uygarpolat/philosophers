@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/19 13:16:57 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 15:19:08 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ typedef struct s_philo
 	pthread_mutex_t	*time_mutex;
 	pthread_mutex_t	*print_mutex;
 	pthread_t		thread;
-	struct timeval	last_eating_time;
-	struct timeval	last_eating_time2;
+	size_t			last_eating_time;
+	size_t			last_eating_time2;
 }					t_philo;
 
 typedef struct s_overseer
@@ -51,7 +51,7 @@ typedef struct s_overseer
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	*time_mutex;
 	t_philo			*philos;
-}			t_overseer;
+}					t_overseer;
 
 // Mutexes
 int		create_mutexes(t_overseer *o);
@@ -67,8 +67,8 @@ int		create_threads(t_philo *p, t_overseer *o);
 void	join_threads(t_philo *p, t_overseer *o);
 void	ft_overseer(t_overseer *o);
 // Time
-size_t	get_relative_time(struct timeval start_time);
-void	ft_usleep(size_t milisecs, int number_of_philos);
+void	ft_usleep(size_t milisecs, t_philo *p);
+size_t	what_time_is_it(void);
 // Utils
 void	free_malloc(t_philo *philo, t_overseer *overseer);
 int		ft_atoi(const char *str);

@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:54:41 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 15:21:46 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 14:30:44 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 int	create_threads(t_philo *p, t_overseer *o)
 {
-	int				i;
-	struct timeval	start_time;
+	int		i;
+	size_t	start_time;
 
-	gettimeofday(&start_time, NULL);
+	start_time = what_time_is_it();
 	i = 0;
 	while (i < o->number_of_philos)
 	{

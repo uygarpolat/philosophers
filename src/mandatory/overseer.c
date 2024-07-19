@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:35:06 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/19 03:29:44 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 17:38:14 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,32 +36,40 @@ static int	everyone_ate(t_overseer *o)
 	return (1);
 }
 
-void	ft_overseer(t_overseer *o)
+static int	is_there_death(t_overseer *o)
 {
 	int		i;
 	size_t	time_since_start_of_meal;
 
+	i = -1;
+	while (++i < o->number_of_philos)
+	{
+		pthread_mutex_lock(&o->time_mutex[i]);
+		time_since_start_of_meal = what_time_is_it()
+			- o->philos[i].last_eating_time2;
+		pthread_mutex_unlock(&o->time_mutex[i]);
+		if (time_since_start_of_meal >= o->time_to_die)
+		{
+			pthread_mutex_lock(&o->death_mutex);
+			o->death = 2;
+			pthread_mutex_unlock(&o->death_mutex);
+			pthread_mutex_lock(&o->print_mutex);
+			printf("%zu %d died\n", what_time_is_it()
+				- o->philos[i].last_eating_time, i + 1);
+			pthread_mutex_unlock(&o->print_mutex);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+void	ft_overseer(t_overseer *o)
+{
 	while (1)
 	{
-		i = -1;
-		while (++i < o->number_of_philos)
-		{
-			pthread_mutex_lock(&o->time_mutex[i]);
-			time_since_start_of_meal = get_relative_time
-				(o->philos[i].last_eating_time2);
-			pthread_mutex_unlock(&o->time_mutex[i]);
-			if (time_since_start_of_meal >= o->time_to_die)
-			{
-				pthread_mutex_lock(&o->death_mutex);
-				o->death = 2;
-				//printf("Time since start of meal: %zu\n", time_since_start_of_meal);
-				printf("%zu %d died\n", get_relative_time
-					(o->philos[i].last_eating_time), i + 1);
-				pthread_mutex_unlock(&o->death_mutex);
-				return ;
-			}
-			if (everyone_ate(o))
-				return ;
-		}
+		if (is_there_death(o))
+			return ;
+		if (everyone_ate(o))
+			return ;
 	}
 }

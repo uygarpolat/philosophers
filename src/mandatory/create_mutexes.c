@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 18:52:08 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/19 13:30:54 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 17:11:39 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,13 @@ static int	init_time_mutexes(t_overseer *o)
 	return (1);
 }
 
+static void	batch_destroy_mutexes(t_overseer *o)
+{
+	destroy_fork_mutexes(o);
+	destroy_write_mutexes(o);
+	destroy_time_mutexes(o);
+}
+
 int	create_mutexes(t_overseer *o)
 {
 	if (!init_fork_mutexes(o))
@@ -80,16 +87,12 @@ int	create_mutexes(t_overseer *o)
 	}
 	if (pthread_mutex_init(&o->death_mutex, NULL) != 0)
 	{
-		destroy_fork_mutexes(o);
-		destroy_write_mutexes(o);
-		destroy_time_mutexes(o);
+		batch_destroy_mutexes(o);
 		return (0);
 	}
 	if (pthread_mutex_init(&o->print_mutex, NULL) != 0)
 	{
-		destroy_fork_mutexes(o);
-		destroy_write_mutexes(o);
-		destroy_time_mutexes(o);
+		batch_destroy_mutexes(o);
 		pthread_mutex_destroy(&o->death_mutex);
 		return (0);
 	}
