@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:35:06 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 16:55:14 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/19 03:29:44 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	ft_overseer(t_overseer *o)
 			{
 				pthread_mutex_lock(&o->death_mutex);
 				o->death = 2;
+				//printf("Time since start of meal: %zu\n", time_since_start_of_meal);
 				printf("%zu %d died\n", get_relative_time
 					(o->philos[i].last_eating_time), i + 1);
 				pthread_mutex_unlock(&o->death_mutex);
