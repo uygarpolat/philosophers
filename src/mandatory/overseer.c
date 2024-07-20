@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:35:06 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 00:20:31 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/21 01:46:48 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,12 @@ static void	announce_death(t_overseer *o, size_t t_meal, size_t t_sim, int i)
 	pthread_mutex_unlock(&o->write_mutex[i]);
 	pthread_mutex_lock(&o->death_mutex);
 	o->death = 2;
-	pthread_mutex_unlock(&o->death_mutex);
 	if (t_meal < t_sim)
 		t_meal = t_sim;
 	pthread_mutex_lock(&o->print_mutex);
 	printf("%zu %d died\n", t_meal, i + 1);
 	pthread_mutex_unlock(&o->print_mutex);
+	pthread_mutex_unlock(&o->death_mutex);
 }
 
 static int	is_there_death(t_overseer *o)

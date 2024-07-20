@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 00:48:08 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/21 01:46:10 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@ static void	write_state(char *str, t_philo *p)
 	pthread_mutex_lock(p->death_mutex);
 	if (!*p->death)
 	{
-		pthread_mutex_unlock(p->death_mutex);
 		pthread_mutex_lock(p->print_mutex);
 		printf("%zu %d %s\n", what_time_is_it()
 			- p->sim_start_time, p->philo_num, str);
 		pthread_mutex_unlock(p->print_mutex);
+		pthread_mutex_unlock(p->death_mutex);
 		return ;
 	}
 	pthread_mutex_unlock(p->death_mutex);
