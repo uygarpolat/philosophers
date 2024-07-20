@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/20 00:30:44 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/20 15:54:01 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	write_state(char *str, t_philo *p)
 		pthread_mutex_unlock(p->death_mutex);
 		pthread_mutex_lock(p->print_mutex);
 		printf("%zu %d %s\n", what_time_is_it()
-			- p->last_eating_time, p->philo_num, str);
+			- p->sim_start_time, p->philo_num, str);
 		pthread_mutex_unlock(p->print_mutex);
 		return ;
 	}
@@ -36,7 +36,7 @@ static int	threads_initial_check(t_philo *p)
 	}
 	pthread_mutex_lock(p->print_mutex);
 	printf("%zu %d is thinking\n", what_time_is_it()
-		- p->last_eating_time, p->philo_num);
+		- p->sim_start_time, p->philo_num);
 	pthread_mutex_unlock(p->print_mutex);
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 		ft_usleep(p->time_to_eat / 2, p);
@@ -65,7 +65,7 @@ void	*eat_sleep_think(void *arg)
 		pthread_mutex_unlock(p->death_mutex);
 		before_eating(p);
 		pthread_mutex_lock(p->time_mutex);
-		p->last_eating_time2 = what_time_is_it();
+		p->last_meal_time = what_time_is_it();
 		pthread_mutex_unlock(p->time_mutex);
 		ft_usleep(p->time_to_eat, p);
 		pthread_mutex_unlock(p->right_fork);

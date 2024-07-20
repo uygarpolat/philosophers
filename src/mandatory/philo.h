@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/19 21:28:52 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/20 15:52:50 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ typedef struct s_philo
 	pthread_mutex_t	*time_mutex;
 	pthread_mutex_t	*print_mutex;
 	pthread_t		thread;
-	size_t			last_eating_time;
-	size_t			last_eating_time2;
+	size_t			sim_start_time;
+	size_t			last_meal_time;
 }					t_philo;
 
 typedef struct s_overseer
