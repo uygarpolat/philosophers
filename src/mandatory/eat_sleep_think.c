@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/20 15:54:01 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/21 00:48:08 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,12 @@ static int	threads_initial_check(t_philo *p)
 {
 	if (p->number_of_philos == 1)
 	{
+		pthread_mutex_lock(p->right_fork);
 		write_state("has taken a fork", p);
+		pthread_mutex_unlock(p->right_fork);
 		return (0);
 	}
-	pthread_mutex_lock(p->print_mutex);
-	printf("%zu %d is thinking\n", what_time_is_it()
-		- p->sim_start_time, p->philo_num);
-	pthread_mutex_unlock(p->print_mutex);
+	write_state("is thinking", p);
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 		ft_usleep(p->time_to_eat / 2, p);
 	pthread_mutex_lock(p->death_mutex);
