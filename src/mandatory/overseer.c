@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:35:06 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 01:46:48 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/21 03:07:32 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ static int	is_there_death(t_overseer *o)
 		t_meal = what_time_is_it() - o->philos[i].last_meal_time;
 		pthread_mutex_unlock(&o->time_mutex[i]);
 		pthread_mutex_lock(&o->write_mutex[i]);
-		if ((!o->philos[i].ate && t_sim >= o->time_to_die)
-			|| t_meal >= o->time_to_die)
+		if ((!o->philos[i].ate && t_sim > o->time_to_die)
+			|| t_meal > o->time_to_die)
 		{
 			announce_death(o, t_meal, t_sim, i);
 			return (1);
