@@ -6,23 +6,23 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/16 17:57:36 by upolat            #+#    #+#              #
-#    Updated: 2024/07/20 14:59:30 by upolat           ###   ########.fr        #
+#    Updated: 2024/07/21 20:13:45 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-SRC_DIR = src/mandatory
+# SRC_DIR = src/mandatory
 
-SOURCES =		$(SRC_DIR)/philo.c \
-				$(SRC_DIR)/create_mutexes.c \
-				$(SRC_DIR)/cleanup.c \
-				$(SRC_DIR)/eat_sleep_think.c \
-				$(SRC_DIR)/overseer.c \
-				$(SRC_DIR)/time.c \
-				$(SRC_DIR)/utils.c \
-				$(SRC_DIR)/initialize.c \
-				$(SRC_DIR)/threads.c \
+SOURCES =		philo.c \
+				create_mutexes.c \
+				cleanup.c \
+				eat_sleep_think.c \
+				overseer.c \
+				time.c \
+				utils.c \
+				initialize.c \
+				threads.c \
 
 OBJECTS = $(SOURCES:.c=.o)
 
