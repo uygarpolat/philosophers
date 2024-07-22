@@ -6,12 +6,43 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 18:52:08 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 20:20:21 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 00:02:47 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
+
+int	initiate_sems(t_overseer *o)
+{
+	sem_unlink("fork_sem");
+	o->fork_sem = sem_open("fork_sem", O_CREAT, 0644, o->number_of_philos);
+	if (o->fork_sem == SEM_FAILED)
+		return (1);
+	sem_unlink("print_sem");
+	o->print_sem = sem_open("print_sem", O_CREAT, 0644, 1);
+	if (o->print_sem == SEM_FAILED)
+		return (1);
+	sem_unlink("death_sem");
+	o->death_sem = sem_open("death_sem", O_CREAT, 0644, 1);
+	if (o->death_sem == SEM_FAILED)
+		return (1);
+	sem_unlink("write_sem");
+	o->write_sem = sem_open("write_sem", O_CREAT, 0644, 1);
+	if (o->write_sem == SEM_FAILED)
+		return (1);
+	sem_unlink("terminate_sem");
+	o->terminate_sem = sem_open("terminate_sem", O_CREAT, 0644, 0);
+	if (o->terminate_sem == SEM_FAILED)
+		return (1);
+	sem_unlink("time_sem");
+	o->time_sem = sem_open("time_sem", O_CREAT, 0644, 1);
+	if (o->time_sem == SEM_FAILED)
+		return (1);
+	return (0);
+}
+
+/*
 static int	init_fork_mutexes(t_overseer *o)
 {
 	int	i;
@@ -98,3 +129,4 @@ int	create_mutexes(t_overseer *o)
 	}
 	return (1);
 }
+*/

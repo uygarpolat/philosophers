@@ -6,12 +6,12 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:23:55 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 20:23:09 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/22 18:17:20 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-
+/*
 void	destroy_fork_mutexes(t_overseer *o)
 {
 	int	i;
@@ -59,3 +59,4 @@ void	free_and_destroy_mutexes(t_philo *philo, t_overseer *overseer)
 	free(overseer->write_mutex);
 	free(overseer->time_mutex);
 }
+*/

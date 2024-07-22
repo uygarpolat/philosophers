@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:37:49 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 20:23:46 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/22 18:38:16 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ void	ft_usleep(size_t milisecs, t_philo *p)
 {
 	size_t	start;
 
-	pthread_mutex_lock(p->death_mutex);
+	sem_wait(p->death_sem);
 	if (*p->death)
 	{
-		pthread_mutex_unlock(p->death_mutex);
+		sem_post(p->death_sem);
 		return ;
 	}
-	pthread_mutex_unlock(p->death_mutex);
+	sem_post(p->death_sem);
 	start = what_time_is_it();
 	while ((what_time_is_it() - start) < milisecs)
 		usleep(500);

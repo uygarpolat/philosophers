@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 20:32:10 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 00:27:55 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <sys/time.h>
 # include <unistd.h>
 # include <semaphore.h>
+# include <signal.h>
 
 typedef struct s_philo
 {
@@ -29,12 +30,12 @@ typedef struct s_philo
 	size_t			time_to_sleep;
 	int				*death;
 	int				ate;
-	sem_t			*right_fork;
-	sem_t			*left_fork;
-	sem_t			*write_mutex;
-	sem_t			*death_mutex;
-	sem_t			*time_mutex;
-	sem_t			*print_mutex;
+	sem_t			*fork_sem;
+	sem_t			*write_sem;
+	sem_t			*death_sem;
+	sem_t			*time_sem;
+	sem_t			*print_sem;
+	sem_t			*terminate_sem;
 	pthread_t		thread;
 	size_t			sim_start_time;
 	size_t			last_meal_time;
@@ -46,11 +47,13 @@ typedef struct s_overseer
 	int				death;
 	int				must_eat_amount;
 	size_t			time_to_die;
-	sem_t			*forks;
-	sem_t			*write_mutex;
-	sem_t			death_mutex;
-	sem_t			print_mutex;
-	sem_t			*time_mutex;
+	sem_t			*fork_sem;
+	sem_t			*write_sem;
+	sem_t			*death_sem;
+	sem_t			*print_sem;
+	sem_t			*time_sem;
+	sem_t			*terminate_sem;
+	pid_t			*pid;
 	t_philo			*philos;
 }					t_overseer;
 
@@ -77,5 +80,7 @@ size_t	what_time_is_it(void);
 void	free_malloc(t_philo *philo, t_overseer *overseer);
 int		ft_atoi(const char *str);
 int		validity_check(int argc, char **argv);
+
+int	initiate_sems(t_overseer *o);
 
 #endif
