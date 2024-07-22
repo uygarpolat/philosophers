@@ -6,13 +6,13 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 20:21:37 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/22 16:59:24 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	handle_memory(t_philo **philo, t_overseer *o)
+static int	handle_memory(t_philo **philo, t_overseer *o)
 {
 	*philo = malloc(sizeof(t_philo) * o->number_of_philos);
 	if (*philo == NULL)
