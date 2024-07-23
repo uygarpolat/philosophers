@@ -18,6 +18,8 @@
 # include <stdlib.h>
 # include <limits.h>
 # include <sys/time.h>
+# include <sys/wait.h>
+# include <fcntl.h>
 # include <unistd.h>
 # include <semaphore.h>
 # include <signal.h>
