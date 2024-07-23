@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 00:20:03 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 02:35:57 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,5 +85,6 @@ void	*eat_sleep_think(void *arg)
 		sem_wait(p->death_sem);
 	}
 	sem_post(p->death_sem);
+	printf("Philo #%d broke free from thread!\n", p->philo_num);
 	return (NULL);
 }

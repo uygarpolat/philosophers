@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:35:06 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 01:13:39 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 02:51:03 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,14 +82,10 @@ void	ft_overseer(t_overseer *o)
 	{
 		if (is_there_death(o))
 		{
-			sem_post(o->terminate_sem);
-			printf("wrqwe");
-			return ;
+			// sem_post(o->terminate_sem);
+			return (2);
 		}
 		if (everyone_ate(o))
-		{
-			printf("w34234rqwe");
-			return ;
-		}
+			return (1);
 	}
 }

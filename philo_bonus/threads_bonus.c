@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:54:41 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 00:59:14 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 02:51:10 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,11 @@ int	create_threads(t_philo *p, t_overseer *o)
 				//free_and_destroy_mutexes(p, o);
 				return (0);
 			}
-			ft_overseer(o);
-			printf("Ready to TERMINATE1!");
+			if (ft_overseer(o) == 2)
+				exit(1);
 			pthread_join(p->thread, NULL);
-			printf("Ready to TERMINATE2!");
-			sem_post(o->terminate_sem);
-			return (1);
+			//sem_post(o->terminate_sem);
+			exit(0);
 		}
 		i++;
 	}
