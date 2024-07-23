@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 00:27:55 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 18:03:54 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ typedef struct s_philo
 	int				ate;
 	sem_t			*fork_sem;
 	sem_t			*write_sem;
-	sem_t			*death_sem;
-	sem_t			*time_sem;
+	sem_t			**death_sem;
 	sem_t			*print_sem;
+	sem_t			*time_sem;
 	sem_t			*terminate_sem;
 	pthread_t		thread;
 	size_t			sim_start_time;

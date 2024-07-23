@@ -6,12 +6,11 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 18:52:08 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 00:02:47 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 17:46:21 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-
 
 int	initiate_sems(t_overseer *o)
 {

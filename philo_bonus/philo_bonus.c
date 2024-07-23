@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 02:44:12 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 18:28:55 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,18 +105,19 @@ static int	wait_for_children(t_overseer *t)
 		final_exit_status = pid_wait(t->pid[i]);
 	return (final_exit_status);
 }
-/*
+
 static void	terminate_processes(t_overseer *o)
 {
 	int		i;
 	
-	i = -1;
-	//while (i--)
-	sem_wait(o->terminate_sem);
+	i = o->number_of_philos;
+	while (i--)
+		sem_wait(o->terminate_sem);
+	printf("Ready to send all the KILL signals!\n");
 	while (++i < o->number_of_philos)
 		kill(o->pid[i], SIGKILL);
 }
-*/
+
 int	main(int argc, char **argv)
 {
 	t_philo		philo;
@@ -138,12 +139,12 @@ int	main(int argc, char **argv)
 	initialize_table(&philo, &overseer, argv);
 	if (!create_threads(&philo, &overseer))
 		return (write(2, "Failed to create threads.\n", 26), 1);
+	//printf("All children arrived!\n");
+	terminate_processes(&overseer);
 	wait_for_children(&overseer);
-	printf("All children arrived!\n");
-	//terminate_processes(&overseer);
-	//wait_for_children(&overseer);
 	free(overseer.pid);
 	semdestroyer(&overseer);
+	printf("I have reached the end!");
 	//ft_overseer(&overseer);
 	//join_threads(philo, &overseer);
 	//free_and_destroy_mutexes(philo, &overseer);

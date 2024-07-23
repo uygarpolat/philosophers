@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 02:35:57 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 18:12:16 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,17 @@
 
 static void	write_state(char *str, t_philo *p)
 {
-	//int sval;
-	//sem_getvalue(p->death_sem, &sval);
-	//printf("p->death_sem value before first encounter for philo #%d: %d\n", p->philo_num, *sval);
-
-	sem_wait(p->death_sem);
+	sem_wait(*p->death_sem);
 	if (!*p->death)
 	{
 		sem_wait(p->print_sem);
 		printf("%zu %d %s\n", what_time_is_it()
 			- p->sim_start_time, p->philo_num, str);
 		sem_post(p->print_sem);
-		sem_post(p->death_sem);
+		sem_post(*p->death_sem);
 		return ;
 	}
-	sem_post(p->death_sem);
+	sem_post(*p->death_sem);
 }
 
 static int	threads_initial_check(t_philo *p)
@@ -43,7 +39,7 @@ static int	threads_initial_check(t_philo *p)
 	write_state("is thinking", p);
 	//if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 	//	ft_usleep(p->time_to_eat / 2, p);
-	sem_wait(p->death_sem);
+	sem_wait(*p->death_sem);
 	return (1);
 }
 
@@ -61,14 +57,11 @@ void	*eat_sleep_think(void *arg)
 	t_philo	*p;
 
 	p = (t_philo *)arg;
-	//int sval;
-	//sem_getvalue(&p->death_sem, &sval);
-	//printf("Semaphore value first thing in the thread for philo #%d: %d\n", p->philo_num, sval);
 	if (!threads_initial_check(p))
 		return (NULL);
 	while (!*p->death)
 	{
-		sem_post(p->death_sem);
+		sem_post(*p->death_sem);
 		before_eating(p);
 		sem_wait(p->time_sem);
 		p->last_meal_time = what_time_is_it();
@@ -82,9 +75,8 @@ void	*eat_sleep_think(void *arg)
 		sem_post(p->write_sem);
 		ft_usleep(p->time_to_sleep, p);
 		write_state("is thinking", p);
-		sem_wait(p->death_sem);
+		sem_wait(*p->death_sem);
 	}
-	sem_post(p->death_sem);
-	printf("Philo #%d broke free from thread!\n", p->philo_num);
+	sem_post(*p->death_sem);
 	return (NULL);
 }

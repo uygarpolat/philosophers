@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:50:05 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 00:01:32 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 18:03:40 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 	p->ate = 0;
 	p->fork_sem = o->fork_sem;
 	p->write_sem = o->write_sem;
-	p->death_sem = o->death_sem;
+	p->death_sem = &o->death_sem;
 	p->print_sem = o->print_sem;
 	p->time_sem = o->time_sem;
 	p->terminate_sem = o->terminate_sem;
