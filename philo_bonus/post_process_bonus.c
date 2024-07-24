@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:23:55 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 13:02:09 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 14:36:31 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	destroy_sems_and_free_pids(t_overseer *o)
 	free(o->pid);
 }
 
-int	pid_wait(pid_t pid)
+static int	pid_wait(pid_t pid)
 {
 	int	status;
 

@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:54:41 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 13:07:16 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 14:32:03 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,17 @@
 
 static void	create_thread(t_philo *p, t_overseer *o, int i, size_t start_time)
 {
+	int	number_of_philos;
+
+	number_of_philos = o->number_of_philos;
 	p->sim_start_time = start_time;
 	p->last_meal_time = start_time;
 	p->philo_num = i + 1;
 	if (pthread_create(&p->thread, NULL,
 			eat_sleep_think, (void *)p) != 0)
 	{
-		write(2, "Failed to create thread.\n", 25);
-		while (o->number_of_philos--)
+		ft_putstr_fd("Failed to create thread.\n", 2);
+		while (number_of_philos--)
 			sem_post(o->terminate_sem);
 		exit (1);
 	}
@@ -30,9 +33,10 @@ static void	create_thread(t_philo *p, t_overseer *o, int i, size_t start_time)
 	exit(0);
 }
 
-int	create_processes(t_philo *p, t_overseer *o)
+void	create_processes(t_philo *p, t_overseer *o)
 {
 	int		i;
+	int		number_of_philos;
 	size_t	start_time;
 
 	start_time = what_time_is_it();
@@ -42,15 +46,15 @@ int	create_processes(t_philo *p, t_overseer *o)
 		o->pid[i] = fork();
 		if (o->pid[i] == -1)
 		{
-			while (--i >= 0)
-				kill(o->pid[i], SIGKILL);
-			free(o->pid);
-			write(2, "Error running fork.\n", 20);
-			exit (1);
+			number_of_philos = o->number_of_philos;
+			ft_putstr_fd("Failed to run fork.\n", 2);
+			while (number_of_philos--)
+				sem_post(o->terminate_sem);
+			return ;
 		}
 		else if (o->pid[i] == 0)
 			create_thread(p, o, i, start_time);
 		i++;
 	}
-	return (0);
+	return ;
 }

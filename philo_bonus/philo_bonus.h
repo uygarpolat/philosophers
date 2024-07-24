@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 12:52:24 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 14:36:43 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ typedef struct s_overseer
 void	*eat_sleep_think(void *arg);
 void	initialize_overseer(t_overseer *o, int argc, char **argv);
 void	initialize_table(t_philo *p, t_overseer *o, char **argv);
-int		create_processes(t_philo *p, t_overseer *o);
+void	create_processes(t_philo *p, t_overseer *o);
 void	ft_overseer(t_overseer *o);
 void	terminate_processes(t_overseer *o);
 
@@ -74,7 +74,6 @@ void	destroy_sems_and_free_pids(t_overseer *o);
 
 // Process IDs
 int		handle_pids(t_overseer *overseer);
-int		pid_wait(pid_t pid);
 int		wait_for_children(t_overseer *t);
 
 // Time

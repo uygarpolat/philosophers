@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 13:08:40 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 14:27:35 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,7 @@ int	main(int argc, char **argv)
 	}
 	initialize_overseer(&overseer, argc, argv);
 	initialize_table(&philo, &overseer, argv);
-	if (create_processes(&philo, &overseer))
-	{
-		ft_putstr_fd("Failed to create threads.\n", 2); // This is incorrect! create_processes can never enter here beause it never returns 1.
-		return (1);
-	}
+	create_processes(&philo, &overseer);
 	terminate_processes(&overseer);
 	wait_for_children(&overseer);
 	destroy_sems_and_free_pids(&overseer);
