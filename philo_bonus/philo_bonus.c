@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 14:27:35 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 15:17:18 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,10 @@ int	main(int argc, char **argv)
 {
 	t_philo		philo;
 	t_overseer	overseer;
+	int			exit_code;
 
 	if (argc < 5 || argc > 6 || !validity_check(argc, argv))
-	{
-		ft_putstr_fd("Usage error.\n", 2);
-		return (1);
-	}
+		return (ft_putstr_fd("Usage error.\n", 2), 1);
 	overseer.number_of_philos = ft_atoi(argv[1]);
 	if (handle_pids(&overseer))
 		return (1);
@@ -50,7 +48,7 @@ int	main(int argc, char **argv)
 	initialize_table(&philo, &overseer, argv);
 	create_processes(&philo, &overseer);
 	terminate_processes(&overseer);
-	wait_for_children(&overseer);
+	exit_code = wait_for_children(&overseer);
 	destroy_sems_and_free_pids(&overseer);
-	return (0);
+	return (exit_code);
 }

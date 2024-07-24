@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:23:55 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 14:36:31 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 15:15:21 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,16 @@ int	wait_for_children(t_overseer *t)
 {
 	int	i;
 	int	final_exit_status;
+	int	temp_exit_status;
 
 	i = -1;
 	final_exit_status = 0;
 	while (++i < t->number_of_philos)
-		final_exit_status = pid_wait(t->pid[i]);
+	{
+		temp_exit_status = pid_wait(t->pid[i]);
+		if (temp_exit_status != 0)
+			final_exit_status = temp_exit_status;
+	}
 	return (final_exit_status);
 }
 
