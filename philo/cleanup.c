@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:23:55 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/19 15:11:43 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 20:48:14 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,18 @@ void	destroy_time_mutexes(t_overseer *o)
 
 void	free_malloc(t_philo *philo, t_overseer *overseer)
 {
-	free(philo);
-	free(overseer->forks);
-	free(overseer->write_mutex);
-	free(overseer->time_mutex);
+	if (philo)
+		free(philo);
+	philo = NULL;
+	if (overseer->forks)
+		free(overseer->forks);
+	overseer->forks = NULL;
+	if (overseer->write_mutex)
+		free(overseer->write_mutex);
+	overseer->write_mutex = NULL;
+	if (overseer->time_mutex)
+		free(overseer->time_mutex);
+	overseer->time_mutex = NULL;
 }
 
 void	free_and_destroy_mutexes(t_philo *philo, t_overseer *overseer)
@@ -54,8 +62,5 @@ void	free_and_destroy_mutexes(t_philo *philo, t_overseer *overseer)
 	destroy_time_mutexes(overseer);
 	pthread_mutex_destroy(&overseer->death_mutex);
 	pthread_mutex_destroy(&overseer->print_mutex);
-	free(philo);
-	free(overseer->forks);
-	free(overseer->write_mutex);
-	free(overseer->time_mutex);
+	free_malloc(philo, overseer);
 }
