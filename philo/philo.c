@@ -6,11 +6,25 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/22 16:59:24 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 16:33:52 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static int	validity_check(int argc, char **argv)
+{
+	int	i;
+
+	i = 1;
+	while (i < argc)
+	{
+		if (!ft_is_pos_num(argv[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
 
 static int	handle_memory(t_philo **philo, t_overseer *o)
 {
@@ -47,22 +61,22 @@ int	main(int argc, char **argv)
 	t_overseer	overseer;
 
 	if (argc < 5 || argc > 6 || !validity_check(argc, argv))
-		return (write(2, "Usage error.\n", 13), 1);
+		return (ft_putstr_fd("Usage error.\n", 2), 1);
 	overseer.number_of_philos = ft_atoi(argv[1]);
 	philo = NULL;
 	if (!handle_memory(&philo, &overseer))
-		return (write(2, "Failed to allocate memory.\n", 27), 1);
+		return (ft_putstr_fd("Failed to allocate memory.\n", 2), 1);
 	overseer.philos = philo;
 	if (!create_mutexes(&overseer))
 	{
 		free_malloc(philo, &overseer);
-		write(2, "Failed to initialize mutex.\n", 28);
+		ft_putstr_fd("Failed to initialize mutex.\n", 2);
 		return (1);
 	}
 	initialize_overseer(&overseer, argc, argv);
 	initialize_table(philo, &overseer, argv);
 	if (!create_threads(philo, &overseer))
-		return (write(2, "Failed to create threads.\n", 26), 1);
+		return (ft_putstr_fd("Failed to create threads.\n", 2), 1);
 	ft_overseer(&overseer);
 	join_threads(philo, &overseer);
 	free_and_destroy_mutexes(philo, &overseer);

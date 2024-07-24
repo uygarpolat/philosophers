@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/20 15:52:50 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 16:32:11 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ size_t	what_time_is_it(void);
 // Utils
 void	free_malloc(t_philo *philo, t_overseer *overseer);
 int		ft_atoi(const char *str);
-int		validity_check(int argc, char **argv);
+int		ft_is_pos_num(char *str);
+void	ft_putstr_fd(char *s, int fd);
 
 #endif

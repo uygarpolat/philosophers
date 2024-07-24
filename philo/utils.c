@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:45:28 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/18 00:48:37 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 16:36:36 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
-static int	ft_is_pos_num(char *str)
+int	ft_is_pos_num(char *str)
 {
 	int	i;
 
@@ -86,16 +86,14 @@ static int	ft_is_pos_num(char *str)
 		return (1);
 }
 
-int	validity_check(int argc, char **argv)
+void	ft_putstr_fd(char *s, int fd)
 {
 	int	i;
 
-	i = 1;
-	while (i < argc)
+	i = 0;
+	while (s[i])
 	{
-		if (!ft_is_pos_num(argv[i]))
-			return (0);
+		write(fd, &s[i], 1);
 		i++;
 	}
-	return (1);
 }
