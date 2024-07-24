@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:54:41 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 14:32:03 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 15:25:25 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,11 @@ static void	create_thread(t_philo *p, t_overseer *o, int i, size_t start_time)
 		exit (1);
 	}
 	ft_overseer(o);
-	pthread_join(p->thread, NULL);
+	if (pthread_join(p->thread, NULL) != 0)
+	{
+		ft_putstr_fd("Thread join failed.\n", 2);
+		exit (1);
+	}
 	exit(0);
 }
 

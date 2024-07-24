@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 15:17:18 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 15:29:49 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ int	main(int argc, char **argv)
 	if (initiate_sems(&overseer))
 	{
 		free(overseer.pid);
+		overseer.pid = NULL;
 		ft_putstr_fd("Failed to initialize semaphores.\n", 2);
 		return (1);
 	}
@@ -50,5 +51,6 @@ int	main(int argc, char **argv)
 	terminate_processes(&overseer);
 	exit_code = wait_for_children(&overseer);
 	destroy_sems_and_free_pids(&overseer);
+	overseer.pid = NULL;
 	return (exit_code);
 }

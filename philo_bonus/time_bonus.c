@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:37:49 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 14:45:49 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 16:23:39 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@ size_t	what_time_is_it(void)
 {
 	struct timeval	time;
 
-	if (gettimeofday(&time, NULL) == -1)
-		ft_putstr_fd("Failed to retrieve time.\n", 2);
+	gettimeofday(&time, NULL);
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
