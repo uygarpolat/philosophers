@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 18:12:16 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 20:51:34 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,6 @@ static int	threads_initial_check(t_philo *p)
 		return (0);
 	}
 	write_state("is thinking", p);
-	//if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
-	//	ft_usleep(p->time_to_eat / 2, p);
 	sem_wait(*p->death_sem);
 	return (1);
 }

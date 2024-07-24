@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:35:06 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 18:10:35 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/23 20:49:05 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,29 +30,8 @@ static int	everyone_ate(t_overseer *o, int temp)
 	}
 	sem_post(o->write_sem);
 	return (0);
-	//sem_wait(o->death_sem);
-	//o->death = 1;
-	//sem_post(o->death_sem);
-	//return (1);
 }
-/*
-static int	everyone_ate2(t_overseer *o)
-{
-	if (!o->must_eat_amount)
-		return (0);
-	sem_wait(o->write_sem);
-	if (o->philos->ate < o->must_eat_amount)
-	{
-		sem_post(o->write_sem);
-		return (0);
-	}
-	sem_post(o->write_sem);
-	sem_wait(o->death_sem);
-	o->death = 1;
-	sem_post(o->death_sem);
-	return (1);
-}
-*/
+
 static void	announce_death(t_overseer *o, size_t t_meal, size_t t_sim)
 {
 	sem_post(o->write_sem);
@@ -63,7 +42,6 @@ static void	announce_death(t_overseer *o, size_t t_meal, size_t t_sim)
 	sem_wait(o->print_sem);
 	printf("%zu %d died\n", t_meal, o->philos->philo_num);
 	sem_post(o->print_sem);
-	//sem_post(o->death_sem);
 }
 
 static int	is_there_death(t_overseer *o)
@@ -97,7 +75,7 @@ void	ft_overseer(t_overseer *o)
 	{
 		if (is_there_death(o))
 		{
-			while(terminate_count--)
+			while (terminate_count--)
 				sem_post(o->terminate_sem);
 			return ;
 		}

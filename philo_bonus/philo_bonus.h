@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 18:03:54 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 03:05:03 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <unistd.h>
 # include <semaphore.h>
 # include <signal.h>
+# include <string.h>
 
 typedef struct s_philo
 {
@@ -66,11 +67,11 @@ void	destroy_write_mutexes(t_overseer *o);
 void	destroy_time_mutexes(t_overseer *o);
 void	free_and_destroy_mutexes(t_philo *philo, t_overseer *overseer);
 
-// Threads
+// Processes
 void	*eat_sleep_think(void *arg);
 void	initialize_overseer(t_overseer *o, int argc, char **argv);
 void	initialize_table(t_philo *p, t_overseer *o, char **argv);
-int		create_threads(t_philo *p, t_overseer *o);
+int		create_processes(t_philo *p, t_overseer *o);
 void	join_threads(t_philo *p, t_overseer *o);
 void	ft_overseer(t_overseer *o);
 
@@ -83,6 +84,6 @@ void	free_malloc(t_philo *philo, t_overseer *overseer);
 int		ft_atoi(const char *str);
 int		validity_check(int argc, char **argv);
 
-int	initiate_sems(t_overseer *o);
+int		initiate_sems(t_overseer *o);
 
 #endif

@@ -6,82 +6,39 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 00:31:07 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/23 18:28:55 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 03:43:36 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static int	handle_memory(t_overseer *o)
+static void	destroy_sems_and_free_pids(t_overseer *o)
 {
-/*	*philo = malloc(sizeof(t_philo) * o->number_of_philos);
-	if (*philo == NULL)
-		return (0);
-	o->forks = malloc(sizeof(sem_t) * o->number_of_philos);
-	if (o->forks == NULL)
-	{
-		free(*philo);
-		return (0);
-	}
-	o->write_mutex = malloc(sizeof(sem_t) * o->number_of_philos);
-	if (o->write_mutex == NULL)
-	{
-		free(*philo);
-		free(o->forks);
-		return (0);
-	}
-	o->time_mutex = malloc(sizeof(sem_t) * o->number_of_philos);
-	if (o->time_mutex == NULL)
-	{
-		free(*philo);
-		free(o->forks);
-		free(o->write_mutex);
-		return (0);
-	} */
-	o->pid = malloc(sizeof(pid_t) * o->number_of_philos); // Do error check.
-	return (1);
-}
-
-int	semunlinker(void)
-{
-	if (sem_unlink("fork_sem") != 0 || sem_unlink("print_sem") != 0)
-	{
-		printf("Error: sem_unlink (forks)\n");
-		return (1);
-	}
-	if (sem_unlink("death_sem") != 0 || sem_unlink("terminate_sem") != 0)
-	{
-		printf("Error: sem_unlink (death)\n");
-		return (1);
-	}
-	if (sem_unlink("time_sem") != 0 || sem_unlink("write_sem") != 0)
-	{
-		printf("Error: sem_unlink (time)\n");
-		return (1);
-	}
-	return (0);
-}
-
-int	semdestroyer(t_overseer *o)
-{
-	if (sem_close(o->fork_sem) != 0 || sem_close(o->print_sem) != 0)
-	{
-		printf("Error: sem_close (forks)\n");
-		return (1);
-	}
-	if (sem_close(o->death_sem) != 0 || sem_close(o->terminate_sem) != 0)
-	{
-		printf("Error: sem_close (death)\n");
-		return (1);
-	}
-	if (sem_close(o->time_sem) != 0 || sem_close(o->write_sem) != 0)
-	{
-		printf("Error: sem_close (time)\n");
-		return (1);
-	}
-	if (semunlinker() == 1)
-		return (1);
-	return (0);
+	if (sem_close(o->fork_sem) != 0)
+		write(2, "fork_sem close failed!\n", 23);
+	if (sem_close(o->print_sem) != 0)
+		write(2, "print_sem close failed!\n", 24);
+	if (sem_close(o->death_sem) != 0)
+		write(2, "death_sem close failed!\n", 24);
+	if (sem_close(o->terminate_sem) != 0)
+		write(2, "terminate_sem close failed!\n", 28);
+	if (sem_close(o->time_sem) != 0)
+		write(2, "time_sem close failed!\n", 23);
+	if (sem_close(o->write_sem) != 0)
+		write(2, "write_sem close failed!\n", 24);
+	if (sem_unlink("fork_sem") != 0)
+		write(2, "fork_sem unlink failed.\n", 24);
+	if (sem_unlink("print_sem") != 0)
+		write(2, "print_sem unlink failed.\n", 25);
+	if (sem_unlink("death_sem") != 0)
+		write(2, "death_sem unlink failed.\n", 25);
+	if (sem_unlink("terminate_sem") != 0)
+		write(2, "terminate_sem unlink failed.\n", 29);
+	if (sem_unlink("time_sem") != 0)
+		write(2, "time_sem unlink failed.\n", 24);
+	if (sem_unlink("write_sem") != 0)
+		write(2, "write_sem unlink failed.\n", 25);
+	free(o->pid);
 }
 
 static int	pid_wait(pid_t pid)
@@ -109,13 +66,15 @@ static int	wait_for_children(t_overseer *t)
 static void	terminate_processes(t_overseer *o)
 {
 	int		i;
-	
+
 	i = o->number_of_philos;
 	while (i--)
 		sem_wait(o->terminate_sem);
-	printf("Ready to send all the KILL signals!\n");
 	while (++i < o->number_of_philos)
-		kill(o->pid[i], SIGKILL);
+	{
+		if (o->pid[i] > 0)
+			kill(o->pid[i], SIGKILL);
+	}
 }
 
 int	main(int argc, char **argv)
@@ -126,27 +85,23 @@ int	main(int argc, char **argv)
 	if (argc < 5 || argc > 6 || !validity_check(argc, argv))
 		return (write(2, "Usage error.\n", 13), 1);
 	overseer.number_of_philos = ft_atoi(argv[1]);
-	if (!handle_memory(&overseer))
+	overseer.pid = malloc(sizeof(pid_t) * overseer.number_of_philos);
+	if (overseer.pid == NULL)
 		return (write(2, "Failed to allocate memory.\n", 27), 1);
+	memset(overseer.pid, -1, sizeof(pid_t) * overseer.number_of_philos);
 	overseer.philos = &philo;
 	if (initiate_sems(&overseer))
 	{
-		//free_malloc(philo, &overseer);
-		//write(2, "Failed to initialize mutex.\n", 28);
+		free(overseer.pid);
+		write(2, "Failed to initialize semaphores.\n", 34);
 		return (1);
 	}
 	initialize_overseer(&overseer, argc, argv);
 	initialize_table(&philo, &overseer, argv);
-	if (!create_threads(&philo, &overseer))
+	if (!create_processes(&philo, &overseer))
 		return (write(2, "Failed to create threads.\n", 26), 1);
-	//printf("All children arrived!\n");
 	terminate_processes(&overseer);
 	wait_for_children(&overseer);
-	free(overseer.pid);
-	semdestroyer(&overseer);
-	printf("I have reached the end!");
-	//ft_overseer(&overseer);
-	//join_threads(philo, &overseer);
-	//free_and_destroy_mutexes(philo, &overseer);
+	destroy_sems_and_free_pids(&overseer);
 	return (0);
 }
