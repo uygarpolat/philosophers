@@ -6,7 +6,7 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/16 17:57:36 by upolat            #+#    #+#              #
-#    Updated: 2024/07/24 03:01:23 by upolat           ###   ########.fr        #
+#    Updated: 2024/07/24 12:20:38 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,13 +14,13 @@ NAME = philo_bonus
 
 SOURCES =		philo_bonus.c \
 				create_semaphores_bonus.c \
-				cleanup_bonus.c \
 				eat_sleep_think_bonus.c \
 				overseer_bonus.c \
 				time_bonus.c \
 				utils_bonus.c \
 				initialize_bonus.c \
 				processes_bonus.c \
+				post_process_bonus.c \
 
 OBJECTS = $(SOURCES:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:54:41 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 03:40:41 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 13:07:16 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,5 +52,5 @@ int	create_processes(t_philo *p, t_overseer *o)
 			create_thread(p, o, i, start_time);
 		i++;
 	}
-	return (1);
+	return (0);
 }

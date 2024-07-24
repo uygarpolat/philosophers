@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 03:05:03 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/24 12:52:24 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,30 +60,30 @@ typedef struct s_overseer
 	t_philo			*philos;
 }					t_overseer;
 
-// Mutexes
-int		create_mutexes(t_overseer *o);
-void	destroy_fork_mutexes(t_overseer *o);
-void	destroy_write_mutexes(t_overseer *o);
-void	destroy_time_mutexes(t_overseer *o);
-void	free_and_destroy_mutexes(t_philo *philo, t_overseer *overseer);
-
 // Processes
 void	*eat_sleep_think(void *arg);
 void	initialize_overseer(t_overseer *o, int argc, char **argv);
 void	initialize_table(t_philo *p, t_overseer *o, char **argv);
 int		create_processes(t_philo *p, t_overseer *o);
-void	join_threads(t_philo *p, t_overseer *o);
 void	ft_overseer(t_overseer *o);
+void	terminate_processes(t_overseer *o);
+
+// Semaphores
+int		initiate_sems(t_overseer *o);
+void	destroy_sems_and_free_pids(t_overseer *o);
+
+// Process IDs
+int		handle_pids(t_overseer *overseer);
+int		pid_wait(pid_t pid);
+int		wait_for_children(t_overseer *t);
 
 // Time
 void	ft_usleep(size_t milisecs, t_philo *p);
 size_t	what_time_is_it(void);
 
 // Utils
-void	free_malloc(t_philo *philo, t_overseer *overseer);
 int		ft_atoi(const char *str);
-int		validity_check(int argc, char **argv);
-
-int		initiate_sems(t_overseer *o);
+void	ft_putstr_fd(char *s, int fd);
+int		ft_is_pos_num(char *str);
 
 #endif
