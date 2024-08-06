@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:50:05 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/19 13:21:37 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/07 00:16:07 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	initialize_table(t_philo *p, t_overseer *o, char **argv)
 	{
 		p[i].philo_num = i + 1;
 		p[i].number_of_philos = ft_atoi(argv[1]);
+		p[i].time_to_die = ft_atoi(argv[2]);
 		p[i].time_to_eat = ft_atoi(argv[3]);
 		p[i].time_to_sleep = ft_atoi(argv[4]);
 		p[i].ate = 0;

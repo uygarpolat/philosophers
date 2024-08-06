@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 16:32:11 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/07 00:16:33 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ typedef struct s_philo
 {
 	int				number_of_philos;
 	int				philo_num;
+	size_t			time_to_die;
 	size_t			time_to_eat;
 	size_t			time_to_sleep;
 	int				*death;
