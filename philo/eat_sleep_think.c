@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/07 19:21:40 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/07 23:31:26 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	threads_initial_check(t_philo *p)
 	pthread_mutex_lock(p->death_mutex);
 	return (1);
 }
-
+/*
 static void	before_eating(t_philo *p)
 {
 	pthread_mutex_lock(p->left_fork);
@@ -51,6 +51,25 @@ static void	before_eating(t_philo *p)
 	pthread_mutex_lock(p->right_fork);
 	write_state("has taken a fork", p);
 	write_state("is eating", p);
+}
+*/
+static void    before_eating(t_philo *p)
+{
+    if(p->left_fork < p->right_fork)
+    {
+        pthread_mutex_lock(p->left_fork);
+		write_state("has taken a fork", p);
+        pthread_mutex_lock(p->right_fork);
+        write_state("has taken a fork", p);
+    }
+    else
+    {
+        pthread_mutex_lock(p->right_fork);
+        write_state("has taken a fork", p);
+        pthread_mutex_lock(p->left_fork);
+        write_state("has taken a fork", p);
+    }
+    write_state("is eating", p);
 }
 
 static void	during_eating(t_philo *p)
