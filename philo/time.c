@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:37:49 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/07 17:54:25 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/07 19:21:14 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,23 @@ size_t	what_time_is_it(void)
 void	ft_usleep(size_t milisecs, t_philo *p)
 {
 	size_t	start;
-	size_t	time_since_last_meal;
+	size_t	i;
 
-	pthread_mutex_lock(p->death_mutex);
-	if (*p->death)
-	{
-		pthread_mutex_unlock(p->death_mutex);
-		return ;
-	}
-	pthread_mutex_unlock(p->death_mutex);
-	pthread_mutex_lock(p->time_mutex);
-	time_since_last_meal = p->last_meal_time;
-	pthread_mutex_unlock(p->time_mutex);
+	i = 0;
 	start = what_time_is_it();
-	while (what_time_is_it() - start < milisecs && what_time_is_it() - time_since_last_meal <  p->time_to_die)
+	while (what_time_is_it() - start < milisecs)
+	{
+		if (i % 100 == 0)
+		{
+			pthread_mutex_lock(p->death_mutex);
+			if (*p->death)
+			{
+				pthread_mutex_unlock(p->death_mutex);
+				return ;
+			}
+			pthread_mutex_unlock(p->death_mutex);
+		}
+		i++;
 		usleep(500);
+	}
 }
