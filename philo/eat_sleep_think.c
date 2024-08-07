@@ -37,25 +37,15 @@ static int	threads_initial_check(t_philo *p)
 		return (0);
 	}
 	write_state("is thinking", p);
-	//if (p->philo_num % 2 == 1)
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 		ft_usleep(p->time_to_eat / 2, p);
 	pthread_mutex_lock(p->death_mutex);
 	return (1);
 }
-/*
-static void	before_eating(t_philo *p)
-{
-	pthread_mutex_lock(p->left_fork);
-	write_state("has taken a fork", p);
-	pthread_mutex_lock(p->right_fork);
-	write_state("has taken a fork", p);
-	write_state("is eating", p);
-}
-*/
+
 static void    before_eating(t_philo *p)
 {
-    if(p->left_fork < p->right_fork)
+if(p->left_fork < p->right_fork)
     {
         pthread_mutex_lock(p->left_fork);
 		write_state("has taken a fork", p);
