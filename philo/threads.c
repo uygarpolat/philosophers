@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:54:41 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/20 15:54:17 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/07 10:46:55 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@ int	create_threads(t_philo *p, t_overseer *o)
 		if (pthread_create(&p[i].thread, NULL,
 				eat_sleep_think, (void *)&p[i]) != 0)
 		{
+			pthread_mutex_lock(&o->death_mutex);
 			o->death = 1;
+			pthread_mutex_unlock(&o->death_mutex);
 			while (--i >= 0)
 				pthread_join(p[i].thread, NULL);
 			free_and_destroy_mutexes(p, o);
@@ -43,5 +45,13 @@ void	join_threads(t_philo *p, t_overseer *o)
 
 	i = -1;
 	while (++i < o->number_of_philos)
-		pthread_join(p[i].thread, NULL);
+	{
+		if (pthread_join(p[i].thread, NULL) != 0)
+		{
+			pthread_mutex_lock(&o->death_mutex);
+			o->death = 1;
+			pthread_mutex_unlock(&o->death_mutex);
+			ft_putstr_fd("Failed to join thread.\n", 2);
+		}
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/07 00:19:56 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/07 11:38:40 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ static int	threads_initial_check(t_philo *p)
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 	{
 		if (p->time_to_eat > p->time_to_die)
-			ft_usleep(p->time_to_die / 2, p);
+			ft_usleep(50, p);
 		else
-			ft_usleep(p->time_to_eat / 2, p); // <--- Only this was here originally, not the 3 lines above.
+			ft_usleep(p->time_to_eat / 2, p);
 	}
 	pthread_mutex_lock(p->death_mutex);
 	return (1);
@@ -57,6 +57,20 @@ static void	before_eating(t_philo *p)
 	write_state("is eating", p);
 }
 
+static void	during_eating(t_philo *p)
+{
+	pthread_mutex_lock(p->time_mutex);
+	p->last_meal_time = what_time_is_it();
+	pthread_mutex_unlock(p->time_mutex);
+	if (p->time_to_eat > p->time_to_die)
+		ft_usleep(p->time_to_die + 5, p);
+	else
+		ft_usleep(p->time_to_eat, p);
+	pthread_mutex_unlock(p->right_fork);
+	pthread_mutex_unlock(p->left_fork);
+	write_state("is sleeping", p);
+}
+
 void	*eat_sleep_think(void *arg)
 {
 	t_philo	*p;
@@ -68,23 +82,14 @@ void	*eat_sleep_think(void *arg)
 	{
 		pthread_mutex_unlock(p->death_mutex);
 		before_eating(p);
-		pthread_mutex_lock(p->time_mutex);
-		p->last_meal_time = what_time_is_it();
-		pthread_mutex_unlock(p->time_mutex);
-		if (p->time_to_eat > p->time_to_die)
-			ft_usleep(p->time_to_die, p);
-		else
-			ft_usleep(p->time_to_eat, p); // <--- Only this was here originally, not the 3 lines above.
-		pthread_mutex_unlock(p->right_fork);
-		pthread_mutex_unlock(p->left_fork);
-		write_state("is sleeping", p);
+		during_eating(p);
 		pthread_mutex_lock(p->write_mutex);
 		p->ate++;
 		pthread_mutex_unlock(p->write_mutex);
 		if (p->time_to_sleep > p->time_to_die)
 			ft_usleep(p->time_to_die, p);
 		else
-			ft_usleep(p->time_to_sleep, p); // <--- Only this was here originally, not the 3 lines above.
+			ft_usleep(p->time_to_sleep, p);
 		write_state("is thinking", p);
 		pthread_mutex_lock(p->death_mutex);
 	}
