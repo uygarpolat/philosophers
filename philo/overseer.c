@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:35:06 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/21 18:59:52 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/07 17:55:17 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,5 +82,6 @@ void	ft_overseer(t_overseer *o)
 			return ;
 		if (everyone_ate(o))
 			return ;
+		//usleep(100);
 	}
 }

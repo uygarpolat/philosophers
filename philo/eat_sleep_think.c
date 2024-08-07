@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/07 11:38:40 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/07 17:55:06 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,13 @@ static int	threads_initial_check(t_philo *p)
 		return (0);
 	}
 	write_state("is thinking", p);
+	//if (p->philo_num % 2 == 1)
 	if (p->philo_num % 2 == 0 || p->philo_num == p->number_of_philos)
 	{
-		if (p->time_to_eat > p->time_to_die)
-			ft_usleep(50, p);
-		else
-			ft_usleep(p->time_to_eat / 2, p);
+		//if (p->time_to_eat > p->time_to_die)
+		//	ft_usleep(50, p);
+		//else
+		ft_usleep(p->time_to_eat / 2, p);
 	}
 	pthread_mutex_lock(p->death_mutex);
 	return (1);
@@ -62,10 +63,10 @@ static void	during_eating(t_philo *p)
 	pthread_mutex_lock(p->time_mutex);
 	p->last_meal_time = what_time_is_it();
 	pthread_mutex_unlock(p->time_mutex);
-	if (p->time_to_eat > p->time_to_die)
-		ft_usleep(p->time_to_die + 5, p);
-	else
-		ft_usleep(p->time_to_eat, p);
+	//if (p->time_to_eat > p->time_to_die)
+	//	ft_usleep(p->time_to_die + 5, p);
+	//else
+	ft_usleep(p->time_to_eat, p);
 	pthread_mutex_unlock(p->right_fork);
 	pthread_mutex_unlock(p->left_fork);
 	write_state("is sleeping", p);
@@ -86,10 +87,10 @@ void	*eat_sleep_think(void *arg)
 		pthread_mutex_lock(p->write_mutex);
 		p->ate++;
 		pthread_mutex_unlock(p->write_mutex);
-		if (p->time_to_sleep > p->time_to_die)
-			ft_usleep(p->time_to_die, p);
-		else
-			ft_usleep(p->time_to_sleep, p);
+		//if (p->time_to_sleep > p->time_to_die)
+		//	ft_usleep(p->time_to_die, p);
+		//else
+		ft_usleep(p->time_to_sleep, p);
 		write_state("is thinking", p);
 		pthread_mutex_lock(p->death_mutex);
 	}
