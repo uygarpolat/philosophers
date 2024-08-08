@@ -82,5 +82,6 @@ void	ft_overseer(t_overseer *o)
 			return ;
 		if (everyone_ate(o))
 			return ;
+	usleep(500);
 	}
 }

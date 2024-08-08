@@ -50,15 +50,17 @@ static void	before_eating(t_philo *p)
 		pthread_mutex_lock(p->left_fork);
 		write_state("has taken a fork", p);
 		pthread_mutex_lock(p->right_fork);
-		write_state("has taken a fork", p);
 	}
 	else
 	{
 		pthread_mutex_lock(p->right_fork);
 		write_state("has taken a fork", p);
 		pthread_mutex_lock(p->left_fork);
-		write_state("has taken a fork", p);
 	}
+
+	write_state("has taken a fork", p);
+	write_state("is eating", p);
+
 /*
 	pthread_mutex_lock(p->left_fork);
 	write_state("has taken a fork", p);

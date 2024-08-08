@@ -26,7 +26,7 @@ SOURCES =		philo.c \
 
 OBJECTS = $(SOURCES:.c=.o)
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -pthread
 
 all: $(NAME)
 
