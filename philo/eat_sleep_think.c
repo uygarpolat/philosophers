@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/08 17:36:25 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/08 20:37:17 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,8 @@ static void	before_eating(t_philo *p)
 		write_state("has taken a fork", p);
 		pthread_mutex_lock(p->left_fork);
 	}
-
 	write_state("has taken a fork", p);
 	write_state("is eating", p);
-
-/*
-	pthread_mutex_lock(p->left_fork);
-	write_state("has taken a fork", p);
-	pthread_mutex_lock(p->right_fork);
-	write_state("has taken a fork", p);
-	write_state("is eating", p);
-*/
 }
 
 static void	during_eating(t_philo *p, size_t *next_meal)
@@ -75,21 +66,26 @@ static void	during_eating(t_philo *p, size_t *next_meal)
 	pthread_mutex_lock(p->time_mutex);
 	p->last_meal_time = what_time_is_it();
 	*next_meal = p->last_meal_time + p->time_to_eat * 2 + 1;
-	//(void)next_meal;
 	pthread_mutex_unlock(p->time_mutex);
 	ft_usleep(p->time_to_eat, p);
 	pthread_mutex_unlock(p->right_fork);
 	pthread_mutex_unlock(p->left_fork);
 	write_state("is sleeping", p);
+	pthread_mutex_lock(p->write_mutex);
+	p->ate++;
+	pthread_mutex_unlock(p->write_mutex);
+	ft_usleep(p->time_to_sleep, p);
 }
 
 void	*eat_sleep_think(void *arg)
 {
 	t_philo	*p;
-	double	delay = 0;
-	size_t	next_meal = 0;
+	double	delay;
+	size_t	next_meal;
 
 	p = (t_philo *)arg;
+	delay = 0;
+	next_meal = 0;
 	if (!threads_initial_check(p))
 		return (NULL);
 	while (!*p->death)
@@ -97,43 +93,12 @@ void	*eat_sleep_think(void *arg)
 		pthread_mutex_unlock(p->death_mutex);
 		delay = (double)next_meal - (double)what_time_is_it();
 		if (p->number_of_philos % 2 == 1 && delay > 0)
-		{
-			//printf("I go here because delay is %f!\n", delay);
 			ft_usleep(delay, p);
-		}
 		before_eating(p);
 		during_eating(p, &next_meal);
-		pthread_mutex_lock(p->write_mutex);
-		p->ate++;
-		pthread_mutex_unlock(p->write_mutex);
-		ft_usleep(p->time_to_sleep, p);
 		write_state("is thinking", p);
 		pthread_mutex_lock(p->death_mutex);
 	}
 	pthread_mutex_unlock(p->death_mutex);
 	return (NULL);
 }
-/*
-void	*eat_sleep_think(void *arg)
-{
-	t_philo	*p;
-
-	p = (t_philo *)arg;
-	if (!threads_initial_check(p))
-		return (NULL);
-	while (!*p->death)
-	{
-		pthread_mutex_unlock(p->death_mutex);
-		before_eating(p);
-		during_eating(p);
-		pthread_mutex_lock(p->write_mutex);
-		p->ate++;
-		pthread_mutex_unlock(p->write_mutex);
-		ft_usleep(p->time_to_sleep, p);
-		write_state("is thinking", p);
-		pthread_mutex_lock(p->death_mutex);
-	}
-	pthread_mutex_unlock(p->death_mutex);
-	return (NULL);
-}
-*/
