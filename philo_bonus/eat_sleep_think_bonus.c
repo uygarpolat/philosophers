@@ -37,20 +37,27 @@ static int	threads_initial_check(t_philo *p)
 		return (0);
 	}
 	write_state("is thinking", p);
-	//if (p->philo_num > p->number_of_philos / 2)
-	//	ft_usleep(p->time_to_sleep / 2, p);
 	sem_wait(*p->death_sem);
 	return (1);
 }
 
 static void	before_eating(t_philo *p)
 {
-	//usleep(20);
 	sem_wait(p->fork_sem);
 	write_state("has taken a fork", p);
 	sem_wait(p->fork_sem);
 	write_state("has taken a fork", p);
 	write_state("is eating", p);
+}
+
+static void	during_eating(t_philo *p)
+{
+	sem_wait(p->time_sem);
+	p->last_meal_time = what_time_is_it();
+	sem_post(p->time_sem);
+	ft_usleep(p->time_to_eat, p);
+	sem_post(p->fork_sem);
+	sem_post(p->fork_sem);
 }
 
 void	*eat_sleep_think(void *arg)
@@ -64,18 +71,14 @@ void	*eat_sleep_think(void *arg)
 	{
 		sem_post(*p->death_sem);
 		before_eating(p);
-		sem_wait(p->time_sem);
-		p->last_meal_time = what_time_is_it();
-		sem_post(p->time_sem);
-		ft_usleep(p->time_to_eat, p);
-		sem_post(p->fork_sem);
-		sem_post(p->fork_sem);
+		during_eating(p);
 		write_state("is sleeping", p);
 		sem_wait(p->write_sem);
 		p->ate++;
 		sem_post(p->write_sem);
 		ft_usleep(p->time_to_sleep, p);
 		write_state("is thinking", p);
+		usleep(400);
 		sem_wait(*p->death_sem);
 	}
 	sem_post(*p->death_sem);
