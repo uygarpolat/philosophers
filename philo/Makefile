@@ -6,13 +6,11 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/16 17:57:36 by upolat            #+#    #+#              #
-#    Updated: 2024/07/24 02:52:45 by upolat           ###   ########.fr        #
+#    Updated: 2024/08/10 15:04:57 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
-
-# SRC_DIR = src/mandatory
 
 SOURCES =		philo.c \
 				create_mutexes.c \
