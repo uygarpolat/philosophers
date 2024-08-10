@@ -14,6 +14,7 @@
 
 static void	write_state(char *str, t_philo *p)
 {
+	// Take a look
 	pthread_mutex_lock(p->death_mutex);
 	if (!*p->death)
 	{
