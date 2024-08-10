@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/10 14:56:25 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/11 00:53:16 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 static void	write_state(char *str, t_philo *p)
 {
-	// Take a look
 	pthread_mutex_lock(p->death_mutex);
 	if (!*p->death)
 	{
