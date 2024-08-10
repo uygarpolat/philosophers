@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/25 00:34:16 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/10 13:52:55 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ static int	threads_initial_check(t_philo *p)
 		return (0);
 	}
 	write_state("is thinking", p);
-	if (p->philo_num > p->number_of_philos / 2)
-		ft_usleep(p->time_to_sleep / 2, p);
+	//if (p->philo_num > p->number_of_philos / 2)
+	//	ft_usleep(p->time_to_sleep / 2, p);
 	sem_wait(*p->death_sem);
 	return (1);
 }
@@ -47,6 +47,7 @@ static void	before_eating(t_philo *p)
 {
 	sem_wait(p->fork_sem);
 	write_state("has taken a fork", p);
+	usleep(10);
 	sem_wait(p->fork_sem);
 	write_state("has taken a fork", p);
 	write_state("is eating", p);
