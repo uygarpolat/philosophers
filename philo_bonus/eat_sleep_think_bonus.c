@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 00:30:22 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/10 13:52:55 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/10 21:43:59 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ static int	threads_initial_check(t_philo *p)
 
 static void	before_eating(t_philo *p)
 {
+	//usleep(20);
 	sem_wait(p->fork_sem);
 	write_state("has taken a fork", p);
-	usleep(10);
 	sem_wait(p->fork_sem);
 	write_state("has taken a fork", p);
 	write_state("is eating", p);
