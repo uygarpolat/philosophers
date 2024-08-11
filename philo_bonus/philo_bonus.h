@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 19:58:40 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/24 14:36:43 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/11 14:44:04 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <limits.h>
 # include <sys/time.h>
 # include <sys/wait.h>
-# include <fcntl.h>
+//# include <fcntl.h>
 # include <unistd.h>
 # include <semaphore.h>
 # include <signal.h>
