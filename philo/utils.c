@@ -89,11 +89,14 @@ int	ft_is_pos_num(char *str)
 void	ft_putstr_fd(char *s, int fd)
 {
 	int	i;
+	int	len;
 
+	len = 0;
 	i = 0;
 	while (s[i])
 	{
-		write(fd, &s[i], 1);
+		len += write(fd, &s[i], 1);
 		i++;
 	}
+	(void)len;
 }
